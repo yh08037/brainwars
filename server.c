@@ -13,6 +13,8 @@
 
 #define SIZE_BUFFER 256
 
+fd_set readfds;
+
 static void usage(void) {
     fprintf(stderr, "\n"
 		"usage: server [-h] [options]"
@@ -25,6 +27,30 @@ static void usage(void) {
 	exit(1);
 }
 
+typedef struct _tx_arg_t {
+	char *tx_msg;
+} tx_arg_t;
+
+void *transmit(void *arg) {
+	int target_fd;
+	char *tx_msg;
+
+	tx_arg_t *tx_arg = (tx_arg_t*) arg;
+	tx_msg = tx_arg->tx_msg;
+
+	while(1) {
+		scanf("%d\n", &target_fd);
+
+		if (FD_ISSET(target_fd, &readfds)) {
+			scanf("%s", tx_msg);
+			write(target_fd, tx_msg, SIZE_BUFFER);
+		}
+		else {
+			printf("fd %d didn't set\n", target_fd);
+		}
+	}
+}
+
 typedef struct _rx_arg_t {
 	char*				rx_msg;
 	int					server_sockfd;
@@ -34,7 +60,7 @@ typedef struct _rx_arg_t {
 void *receive(void *arg) {
 	char 	ch;
 	int 	result, fd, nread, client_len;
-	fd_set 	readfds, testfds;
+	fd_set 	testfds;
 
 	char*				rx_msg;
 	int 				server_sockfd, client_sockfd;
@@ -85,11 +111,13 @@ void *receive(void *arg) {
 						// sleep(1);	// it will make server more secure
 
 						// echo response - for test
-						write(fd, rx_msg, SIZE_BUFFER);
+						// write(fd, rx_msg, SIZE_BUFFER);
 					}
 				}
 			}
 		}
+
+		printf("\n");
 	}
 	
 	close(client_sockfd);
@@ -110,9 +138,10 @@ int main(int argc, char* argv[])
 	char                    tx_msg[SIZE_BUFFER];
 	
 	// vars for threads
+	tx_arg_t	tx_arg;
 	rx_arg_t	rx_arg;
-    int 		res1;
-    pthread_t	a_thread1;
+    int 		res1, res2;
+    pthread_t	a_thread1, a_thread2;
     void 		*thread_result;
 	
 
@@ -140,20 +169,27 @@ int main(int argc, char* argv[])
 	listen(server_sockfd, 5);
 
 
-	// initialize args for rx threads
+	// initialize args for tx/rx threads
+	tx_arg.tx_msg = tx_msg;
 	rx_arg.rx_msg = rx_msg;
 	rx_arg.server_sockfd = server_sockfd;
 	rx_arg.server_address = server_address;
 
 	// create rx threads
-	res1 = pthread_create(&a_thread1, NULL, receive, (void*)&rx_arg);
+	res1 = pthread_create(&a_thread1, NULL, transmit, (void*)&tx_arg);
+	res2 = pthread_create(&a_thread2, NULL, receive, (void*)&rx_arg);
 
 	if (res1 != 0) {
 		perror("Thread creation failed");
 		exit(EXIT_FAILURE);
 	}
+	if (res2 != 0) {
+		perror("Thread creation failed");
+		exit(EXIT_FAILURE);
+	}
 
 	res1 = pthread_join(a_thread1, &thread_result);
+	res2 = pthread_join(a_thread2, &thread_result);
 
 	close(server_sockfd);
 	exit(0);
