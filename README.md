@@ -11,4 +11,6 @@
 ### 2020.11.22
 #### 양방향 송수신 구현
 쓰레드를 통한 양방향(클라이언트<->서버) 문자열 메시지 송수신 구현
+
+참고: [FD_SET, FD_ZERO등의 매크로 함수 정리](http://blog.naver.com/tipsware/220810795410)
 ![bidirectional_msg](images/basic-txrx-complete.png)
