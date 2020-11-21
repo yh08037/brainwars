@@ -12,24 +12,52 @@
 
 #define SIZE_BUFFER 256
 
-int main()
+static void usage(void) {
+    fprintf(stderr, "\n"
+		"usage: server [-h] [options]"
+		"\n"
+		"options:\n"
+		"    -h  show this message\n"
+		"    -p  port number of server (default: 9734)\n"
+		"\n"
+	);
+	exit(1);
+}
+
+int main(int argc, char* argv[])
 {
 	int                     server_sockfd, client_sockfd;
 	int                     server_len, client_len;
 	struct sockaddr_in      server_address;
 	struct sockaddr_in      client_address;
 	
+	int						opt;
+	int						port_number = 9734;
+
 	int 					result;
 	fd_set					readfds, testfds;
 
 	char                    msg[SIZE_BUFFER];
 
 
+	while ((opt = getopt(argc, argv, "hd:p:")) != -1) {
+        switch (opt) {
+        case 'h':
+            usage();
+            break;
+		case 'p':
+			port_number = atoi(strdup(optarg));
+			break;
+        default:
+            break;
+        }
+    }	
+
 	server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	server_address.sin_family = AF_INET;
 	server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_address.sin_port = htons(9734);
+	server_address.sin_port = htons(port_number);
 	server_len = sizeof(server_address);
 	bind(server_sockfd, (struct sockaddr *)&server_address, server_len);
 
@@ -69,11 +97,10 @@ int main()
 						printf("removing client on fd %d\n", fd);
 					}
 					else {
-						// read(fd, &ch, 1);
 						read(fd, msg, SIZE_BUFFER);
-						sleep(1);
 						printf("serving client on fd %d\n", fd);
 						printf("msg from client on fd %d: %s\n", fd, msg);
+						// sleep(1);	// it will make server more secure
 					}
 				}
 			}
