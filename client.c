@@ -16,7 +16,7 @@ static void usage(void) {
 		"\n"
 		"options:\n"
 		"    -h  show this message\n"
-		"    -d  ipv4 address of server (default: 127.0.0.1)\n"
+		"    -d  ipv4 address of server (default: 155.230.107.136)\n"
 		"    -p  port number of server (default: 9734)\n"
 		"\n"
 	);
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	struct sockaddr_in      address;
 	char                    msg[SIZE_BUFFER];
 
-	char*					ipv4_address = "127.0.0.1";
+	char*					ipv4_address = "155.230.107.136";
 	int						port_number = 9734;
 	
 
