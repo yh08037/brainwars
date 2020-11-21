@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -17,9 +19,12 @@ int main()
 	struct sockaddr_in      server_address;
 	struct sockaddr_in      client_address;
 	
+	int 					result;
+	fd_set					readfds, testfds;
+
 	char                    msg[SIZE_BUFFER];
 
-	unlink("server_socket");
+
 	server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	server_address.sin_family = AF_INET;
@@ -30,22 +35,49 @@ int main()
 
 	listen(server_sockfd, 5);
 
-	client_len = sizeof(client_address);
-	client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
-	
-	while(1) {
-		printf("server waiting\n");
+	FD_ZERO(&readfds);
+	FD_SET(server_sockfd, &readfds);
 
-		read(client_sockfd, msg, SIZE_BUFFER);
-		
-		if (strcmp(msg, "quit")==0) {
-			printf("quit-server\n");
-			break;
+	while(1) {
+		char ch;
+		int fd, nread;
+
+		testfds = readfds;
+
+		printf("server waiting\n");
+		result = select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, (struct timeval *)0);
+
+		if (result < 1) {
+			perror("error: select");
+			exit(1);
 		}
 
-		printf("msg from client: %s\n", msg);
+		for (fd = 0; fd < FD_SETSIZE; fd++) {
+			if (FD_ISSET(fd, &testfds)) {
+				if (fd == server_sockfd) {
+					client_len = sizeof(client_address);
+					client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
+					FD_SET(client_sockfd, &readfds);
+					printf("adding client on fd %d\n", client_sockfd);
+				}
+				else {
+					ioctl(fd, FIONREAD, &nread);
 
-		//write(client_sockfd, msg, SIZE_BUFFER);
+					if (nread == 0) {
+						close(fd);
+						FD_CLR(fd, &readfds);
+						printf("removing client on fd %d\n", fd);
+					}
+					else {
+						// read(fd, &ch, 1);
+						read(fd, msg, SIZE_BUFFER);
+						sleep(1);
+						printf("serving client on fd %d\n", fd);
+						printf("msg from client on fd %d: %s\n", fd, msg);
+					}
+				}
+			}
+		}
 	}
 
 	close(client_sockfd);
