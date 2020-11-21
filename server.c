@@ -101,6 +101,9 @@ int main(int argc, char* argv[])
 						printf("serving client on fd %d\n", fd);
 						printf("msg from client on fd %d: %s\n", fd, msg);
 						// sleep(1);	// it will make server more secure
+
+						// echo response - for test
+						write(fd, msg, SIZE_BUFFER);
 					}
 				}
 			}
