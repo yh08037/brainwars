@@ -48,3 +48,4 @@ joystick의 입력을 받을 수 있는 디바이스 드라이버 구현
 
 #### slider master 코드 최적화
 코드 블럭화 시켜 코드를 옮기기 편하게 만들었음
+![shortcode](images/slider_master_shortcode.png)
