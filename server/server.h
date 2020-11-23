@@ -14,9 +14,10 @@
 #include <string.h>
 #include <pthread.h>
 
+#include "queue.h"
+
 #define SIZE_BUFFER 256
 
-fd_set readfds;
 
 static void usage(void) {
     fprintf(stderr, "\n"
@@ -30,22 +31,27 @@ static void usage(void) {
 	exit(1);
 }
 
+fd_set readfds;
+queue tx_buffer;
+
+typedef struct _labeled_msg_t {
+	int target_fd;
+	char tx_msg[SIZE_BUFFER];
+} labeled_msg_t;
+
 typedef struct _server_cfg_t {
 	int server_sockfd;
 } server_cfg_t;
 
-typedef struct _tx_arg_t {
-	char *tx_msg;
-} tx_arg_t;
-
 typedef struct _rx_arg_t {
-	char* rx_msg;
-	int   server_sockfd;
+	int server_sockfd;
 } rx_arg_t;
 
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
+void get_msg(int *clientfd, char *tx_msg);
 void *transmit(void *arg);
 void *receive(void *arg);
+void *process(void *arg);
 
 #endif // SERVER_H
