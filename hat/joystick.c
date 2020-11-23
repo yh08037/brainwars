@@ -10,7 +10,6 @@
 #include <linux/input.h>
  
 int main(int argc, char** argv) {
-    uint8_t keys[128];
     int fd;
  
     fd = open(argv[1], O_RDONLY);
