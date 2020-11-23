@@ -21,54 +21,59 @@ void init_server(server_cfg_t *server_cfg, int port_number) {
 void run_server(server_cfg_t *server_cfg) {
 	
 	int server_sockfd = server_cfg->server_sockfd;
-
-	// tx/rx message buffer
-	char rx_msg[SIZE_BUFFER];
-	char tx_msg[SIZE_BUFFER];
 	
 	// vars for threads
-	tx_arg_t	tx_arg;
 	rx_arg_t	rx_arg;
-    int 		res1, res2;
-    pthread_t	tx_thread, rx_thread;
+    int 		res1, res2, res3;
+    pthread_t	tx_thread, rx_thread, process_thread;
     void 		*thread_result;
 	
 	// initialize args for tx/rx threads
-	tx_arg.tx_msg = tx_msg;
-	
-	rx_arg.rx_msg = rx_msg;
 	rx_arg.server_sockfd = server_sockfd;
 
 	// create rx threads
-	res1 = pthread_create(&tx_thread, NULL, transmit, (void*)&tx_arg);
+	res1 = pthread_create(&tx_thread, NULL, transmit, NULL);
 	res2 = pthread_create(&rx_thread, NULL, receive, (void*)&rx_arg);
+	res3 = pthread_create(&process_thread, NULL, process, NULL);
 
-	if (res1 != 0) {
-		perror("Thread creation failed");
-		exit(EXIT_FAILURE);
-	}
-	if (res2 != 0) {
+	if (res1 != 0 || res2 != 0 || res3 != 0 ) {
 		perror("Thread creation failed");
 		exit(EXIT_FAILURE);
 	}
 
 	res1 = pthread_join(tx_thread, &thread_result);
     res2 = pthread_join(rx_thread, &thread_result);
+    res3 = pthread_join(process_thread, &thread_result);
+}
+
+void get_msg(int *target_fd, char *tx_msg) {
+
+	labeled_msg_t *labeled_msg;
+
+	while (1) {
+		if (!queue_empty(&tx_buffer)) {
+			labeled_msg = (labeled_msg_t*)queue_front(&tx_buffer);
+
+			strcpy(tx_msg, labeled_msg->tx_msg);
+			*target_fd = labeled_msg->target_fd;
+			
+			queue_dequeue(&tx_buffer);
+			break;
+		}
+		sleep(0.1);
+	}
 }
 
 void *transmit(void *arg) {
+	
+	// tx message buffer
+	char tx_msg[SIZE_BUFFER];
 
-	int target_fd;
-	char *tx_msg;
-
-	tx_arg_t *tx_arg = (tx_arg_t*) arg;
-	tx_msg = tx_arg->tx_msg;
+	int target_fd = 4;
 
 	while(1) {
-		scanf("%d\n", &target_fd);
-
+		get_msg(&target_fd, tx_msg);
 		if (FD_ISSET(target_fd, &readfds)) {
-			scanf("%s", tx_msg);
 			write(target_fd, tx_msg, SIZE_BUFFER);
 		}
 		else {
@@ -78,17 +83,18 @@ void *transmit(void *arg) {
 }
 
 void *receive(void *arg) {
+	
+	// rx message buffer
+	char rx_msg[SIZE_BUFFER];
 
 	int 	result, fd, nread, client_len;
 	fd_set 	testfds;
 
-	char*				rx_msg;
 	int 				server_sockfd, client_sockfd;
 	struct sockaddr_in	client_address;
-
+	
 	rx_arg_t *rx_arg = (rx_arg_t*) arg;
 
-	rx_msg = rx_arg->rx_msg;
 	server_sockfd = rx_arg->server_sockfd;
 
 	
@@ -140,4 +146,25 @@ void *receive(void *arg) {
 	}
 	
 	close(client_sockfd);
+}
+
+void *process(void *arg) {
+	
+	char input[SIZE_BUFFER];
+
+	labeled_msg_t *labeled_msg;
+	int fd;
+	char *temp;
+
+
+	while (1) {
+		scanf("%d-%s", &fd, input);
+
+		labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
+
+		strcpy(labeled_msg->tx_msg, input);
+		labeled_msg->target_fd = fd;
+
+		queue_enqueue(&tx_buffer, labeled_msg);
+	}
 }

@@ -12,6 +12,8 @@
 #include <string.h>
 #include <pthread.h>
 
+#include "queue.h"
+
 #define SIZE_BUFFER 256
 
 static void usage(void) {
@@ -27,18 +29,21 @@ static void usage(void) {
 	exit(1);
 }
 
+queue tx_buffer;
+
 typedef struct _client_cfg_t {
 	int sockfd;
 } client_cfg_t;
 
 typedef struct _client_arg_t {
-	char *msg;
 	int sockfd;
 } client_arg_t;
 
 void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
 void run_client(client_cfg_t *client_cfg);
+void get_msg(char *tx_msg);
 void *transmit(void *arg);
 void *receive(void *arg);
+void *process(void *arg);
 
 #endif // CLIENT_H
