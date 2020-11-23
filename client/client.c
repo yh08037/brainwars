@@ -22,8 +22,9 @@ void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number) 
 		exit(1);
 	}
 
-	// initialize tx_buffer 
+	// initialize tx_buffer / rx_buffer 
 	queue_init(&tx_buffer);
+	queue_init(&rx_buffer);	
 }
 
 void run_client(client_cfg_t *client_cfg) {
@@ -73,12 +74,26 @@ void get_msg_from_tx_buffer(char *tx_msg) {
 
 void push_msg_to_tx_buffer(char *tx_msg) {
 
-	char *temp;
-
-	temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
+	char *temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
 
 	strcpy(temp, tx_msg);
 	queue_enqueue(&tx_buffer, temp);
+}
+
+void get_msg_from_rx_buffer(char *rx_msg) {
+
+	char *temp = (char*)queue_front(&rx_buffer);
+
+	strcpy(rx_msg, temp);
+	queue_dequeue(&rx_buffer);
+}
+
+void push_msg_to_rx_buffer(char *rx_msg) {
+
+	char *temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
+
+	strcpy(temp, rx_msg);
+	queue_enqueue(&rx_buffer, temp);
 }
 
 void *transmit(void *arg) {
@@ -113,7 +128,8 @@ void *receive(void *arg) {
 
 	while (1) {
 		read(sockfd, rx_msg, SIZE_BUFFER);
-		printf("msg from server: %s\n", rx_msg);
+		// printf("msg from server: %s\n", rx_msg);
+		push_msg_to_rx_buffer(rx_msg);
 
 		// move to command interpreter in future
 		if (strcmp(rx_msg, "quit")==0) {
@@ -128,7 +144,15 @@ void *process(void *arg) {
 	char input[SIZE_BUFFER];
 
 	while (1) {
-		scanf("%s", input);
-		push_msg_to_tx_buffer(input);
+		// check rx_buffer
+		if (!queue_empty(&rx_buffer)) {
+			get_msg_from_rx_buffer(input);
+			printf("msg from server : %s\n", input);
+		}
+		
+		// scanf("%s", input);
+		// push_msg_to_tx_buffer(input);
+		
+		sleep(T_BUFFER_CHECK);
 	}
 }

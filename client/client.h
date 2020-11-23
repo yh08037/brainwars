@@ -30,7 +30,7 @@ static void usage(void) {
 	exit(1);
 }
 
-queue tx_buffer;
+queue tx_buffer, rx_buffer;
 
 typedef struct _client_cfg_t {
 	int sockfd;
@@ -42,8 +42,13 @@ typedef struct _client_arg_t {
 
 void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
 void run_client(client_cfg_t *client_cfg);
+
 void get_msg_from_tx_buffer(char *tx_msg); // blocking
 void push_msg_to_tx_buffer(char *tx_msg);  // non-blocking
+
+void get_msg_from_rx_buffer(char *rx_msg); // non-blocking
+void push_msg_to_rx_buffer(char *rx_msg);  // non-blocking
+
 void *transmit(void *arg);
 void *receive(void *arg);
 void *process(void *arg);
