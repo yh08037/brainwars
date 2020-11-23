@@ -46,7 +46,7 @@ void run_server(server_cfg_t *server_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg(int *target_fd, char *tx_msg) {
+void get_msg_from_tx_buffer(int *target_fd, char *tx_msg) {
 
 	labeled_msg_t *labeled_msg;
 
@@ -60,8 +60,20 @@ void get_msg(int *target_fd, char *tx_msg) {
 			queue_dequeue(&tx_buffer);
 			break;
 		}
-		sleep(0.1);
+		sleep(T_BUFFER_CHECK);
 	}
+}
+
+void push_msg_to_tx_buffer(int target_fd, char *tx_msg) {
+
+	labeled_msg_t *labeled_msg;
+
+	labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
+
+	strcpy(labeled_msg->tx_msg, tx_msg);
+	labeled_msg->target_fd = target_fd;
+
+	queue_enqueue(&tx_buffer, labeled_msg);
 }
 
 void *transmit(void *arg) {
@@ -72,7 +84,7 @@ void *transmit(void *arg) {
 	int target_fd = 4;
 
 	while(1) {
-		get_msg(&target_fd, tx_msg);
+		get_msg_from_tx_buffer(&target_fd, tx_msg);
 		if (FD_ISSET(target_fd, &readfds)) {
 			write(target_fd, tx_msg, SIZE_BUFFER);
 		}
@@ -151,20 +163,10 @@ void *receive(void *arg) {
 void *process(void *arg) {
 	
 	char input[SIZE_BUFFER];
-
-	labeled_msg_t *labeled_msg;
 	int fd;
-	char *temp;
-
 
 	while (1) {
 		scanf("%d-%s", &fd, input);
-
-		labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
-
-		strcpy(labeled_msg->tx_msg, input);
-		labeled_msg->target_fd = fd;
-
-		queue_enqueue(&tx_buffer, labeled_msg);
+		push_msg_to_tx_buffer(fd, input);	
 	}
 }

@@ -56,7 +56,7 @@ void run_client(client_cfg_t *client_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg(char *tx_msg) {
+void get_msg_from_tx_buffer(char *tx_msg) {
 
 	char *temp;
 
@@ -67,8 +67,18 @@ void get_msg(char *tx_msg) {
 			queue_dequeue(&tx_buffer);
 			break;
 		}
-		sleep(0.1);
+		sleep(T_BUFFER_CHECK);
 	}
+}
+
+void push_msg_to_tx_buffer(char *tx_msg) {
+
+	char *temp;
+
+	temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
+
+	strcpy(temp, tx_msg);
+	queue_enqueue(&tx_buffer, temp);
 }
 
 void *transmit(void *arg) {
@@ -81,7 +91,7 @@ void *transmit(void *arg) {
 	int sockfd = tx_arg->sockfd;
 
 	while (1) {
-		get_msg(tx_msg);
+		get_msg_from_tx_buffer(tx_msg);
 		write(sockfd, tx_msg, SIZE_BUFFER);
 		
 		// move to command interpreter in future
@@ -116,12 +126,9 @@ void *receive(void *arg) {
 void *process(void *arg) {
 	
 	char input[SIZE_BUFFER];
-	char *temp;
 
 	while (1) {
 		scanf("%s", input);
-		temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
-		strcpy(temp, input);
-		queue_enqueue(&tx_buffer, temp);
+		push_msg_to_tx_buffer(input);
 	}
 }
