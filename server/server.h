@@ -30,18 +30,22 @@ static void usage(void) {
 	exit(1);
 }
 
+typedef struct _server_cfg_t {
+	int server_sockfd;
+} server_cfg_t;
+
 typedef struct _tx_arg_t {
 	char *tx_msg;
 } tx_arg_t;
 
-void *transmit(void *arg);
-
 typedef struct _rx_arg_t {
-	char*				rx_msg;
-	int					server_sockfd;
-	struct sockaddr_in	server_address;
+	char* rx_msg;
+	int   server_sockfd;
 } rx_arg_t;
 
+void init_server(server_cfg_t *server_cfg, int port_number);
+void run_server(server_cfg_t *server_cfg);
+void *transmit(void *arg);
 void *receive(void *arg);
 
 #endif // SERVER_H

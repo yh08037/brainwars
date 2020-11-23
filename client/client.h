@@ -27,11 +27,17 @@ static void usage(void) {
 	exit(1);
 }
 
+typedef struct _client_cfg_t {
+	int sockfd;
+} client_cfg_t;
+
 typedef struct _client_arg_t {
 	char *msg;
 	int sockfd;
 } client_arg_t;
 
+void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
+void run_client(client_cfg_t *client_cfg);
 void *transmit(void *arg);
 void *receive(void *arg);
 
