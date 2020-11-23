@@ -16,7 +16,8 @@
 
 #include "queue.h"
 
-#define SIZE_BUFFER 256
+#define SIZE_BUFFER 	16
+#define T_BUFFER_CHECK	0.1
 
 
 static void usage(void) {
@@ -32,11 +33,11 @@ static void usage(void) {
 }
 
 fd_set readfds;
-queue tx_buffer;
+queue tx_buffer, rx_buffer;
 
 typedef struct _labeled_msg_t {
 	int target_fd;
-	char tx_msg[SIZE_BUFFER];
+	char msg[SIZE_BUFFER];
 } labeled_msg_t;
 
 typedef struct _server_cfg_t {
@@ -49,7 +50,13 @@ typedef struct _rx_arg_t {
 
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
-void get_msg(int *clientfd, char *tx_msg);
+
+void get_msg_from_tx_buffer(int *target_fd, char *tx_msg); // blocking
+void push_msg_to_tx_buffer(int target_fd, char *tx_msg);   // non-blocking
+
+void get_msg_from_rx_buffer(int *target_fd, char *rx_msg); // non-blocking
+void push_msg_to_rx_buffer(int target_fd, char *rx_msg);   // non-blocking
+
 void *transmit(void *arg);
 void *receive(void *arg);
 void *process(void *arg);
