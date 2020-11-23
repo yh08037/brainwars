@@ -1,7 +1,63 @@
 #include "server.h"
 
 
+void init_server(server_cfg_t *server_cfg, int port_number) {
+	
+	struct sockaddr_in server_address;
+
+	server_cfg->server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+	server_address.sin_port = htons(port_number);
+	bind(server_cfg->server_sockfd, 
+		 (struct sockaddr *) &server_address, 
+		 sizeof(server_address)
+	);
+
+	listen(server_cfg->server_sockfd, 5);
+}
+
+void run_server(server_cfg_t *server_cfg) {
+	
+	int server_sockfd = server_cfg->server_sockfd;
+
+	// tx/rx message buffer
+	char rx_msg[SIZE_BUFFER];
+	char tx_msg[SIZE_BUFFER];
+	
+	// vars for threads
+	tx_arg_t	tx_arg;
+	rx_arg_t	rx_arg;
+    int 		res1, res2;
+    pthread_t	tx_thread, rx_thread;
+    void 		*thread_result;
+	
+	// initialize args for tx/rx threads
+	tx_arg.tx_msg = tx_msg;
+	
+	rx_arg.rx_msg = rx_msg;
+	rx_arg.server_sockfd = server_sockfd;
+
+	// create rx threads
+	res1 = pthread_create(&tx_thread, NULL, transmit, (void*)&tx_arg);
+	res2 = pthread_create(&rx_thread, NULL, receive, (void*)&rx_arg);
+
+	if (res1 != 0) {
+		perror("Thread creation failed");
+		exit(EXIT_FAILURE);
+	}
+	if (res2 != 0) {
+		perror("Thread creation failed");
+		exit(EXIT_FAILURE);
+	}
+
+	res1 = pthread_join(tx_thread, &thread_result);
+    res2 = pthread_join(rx_thread, &thread_result);
+}
+
 void *transmit(void *arg) {
+
 	int target_fd;
 	char *tx_msg;
 
@@ -22,19 +78,18 @@ void *transmit(void *arg) {
 }
 
 void *receive(void *arg) {
-	char 	ch;
+
 	int 	result, fd, nread, client_len;
 	fd_set 	testfds;
 
 	char*				rx_msg;
 	int 				server_sockfd, client_sockfd;
-	struct sockaddr_in	server_address, client_address;
+	struct sockaddr_in	client_address;
 
 	rx_arg_t *rx_arg = (rx_arg_t*) arg;
 
 	rx_msg = rx_arg->rx_msg;
 	server_sockfd = rx_arg->server_sockfd;
-	server_address = rx_arg->server_address;
 
 	
 	FD_ZERO(&readfds);
