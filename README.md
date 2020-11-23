@@ -43,3 +43,8 @@ joystick의 입력을 받을 수 있는 디바이스 드라이버 구현
 기존 scanf로 데이터 발생시킨 부분 대신 버퍼에 보낼 데이터가 있는지 확인하여 전송
 
 ![tx_buffer](images/tx_buffer_check.png)
+
+### 2020.11.24
+
+#### slider master 코드 최적화
+코드 블럭화 시켜 코드를 옮기기 편하게 만들었음
