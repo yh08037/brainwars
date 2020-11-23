@@ -1,5 +1,10 @@
 # brainwars
 
+## Introduction
+
+실시간 대전형 두뇌 트레이닝 게임
+
+텀 프로젝트 계획서는 reports에 있습니다.
 
 ## Progress
 
@@ -24,6 +29,10 @@ LED matrix 이해 및 원하는 원하는 대로 출력
 ### 2020.11.23
 #### joystick 이해
 joystick의 입력을 받을 수 있는 디바이스 드라이버 구현
+
+#### slide_mater 일부 구현
+파란색 화살표면 화살표 반대로 입력, 빨간색 화살표면 반대로 입력
+오답시 깜빡깜빡하게 만들었음
 
 #### client/server - main 함수 인터페이스 단순화 
 소켓, 쓰레드 설정등의 코드를 init/run 함수로 분리해 main 함수를 읽기 쉽게 함

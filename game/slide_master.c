@@ -97,10 +97,13 @@ int main(void){
     while(1)
     {
         if (state_isCorrect == true){
+            memset(map, 0, FILESIZE);
+            delay(100);
             random_arrow(p, direction, color);
             state_isCorrect = false;
             continue;
         }
+
         if(read(fd, &ev, sizeof(struct input_event)) < 0)
         {
             if(errno == EINTR)
@@ -109,13 +112,20 @@ int main(void){
             break;
         }
  
-        if(EV_KEY != ev.type && ev.value != 1)
+        if(EV_KEY != ev.type || ev.value != 1)
             continue;
 
-        
         state_isCorrect = check(*direction, *color, ev.code);
-    }
 
+        if (state_isCorrect == false){
+            for(i = 0; i < 4; i++){
+                memset(p, 0, FILESIZE);
+                delay(100);
+                arrow(p, *direction, *color == 0 ? RGB565_RED : RGB565_BLUE);
+                delay(100);
+            }
+        }
+    }
 
     // setup close
 
@@ -149,6 +159,7 @@ int random_arrow(uint16_t *p, int *direction, int *color){ // p - input, directi
 }
 
 void arrow(uint16_t *p, Direction direction, int color){
+    // printf("%d, %d\n", direction, color);
     int arrow_shape[4][64] = { // North, South, East, West
     {
         0,0,0,1,1,0,0,0,
@@ -193,7 +204,7 @@ void arrow(uint16_t *p, Direction direction, int color){
 }
 
 bool check(int answer_direction, int answer_color, int direction){
-    printf("%d, %d, %d\n", answer_direction, answer_color, direction);
+    // printf("%d, %d, %d\n", answer_direction, answer_color, direction);
     int answer_sheet[2][4] = {{106, 103, 108, 105}, {105, 108, 103, 106}};
 
     if (answer_sheet[answer_color][answer_direction] == direction) return true;
