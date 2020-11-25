@@ -46,7 +46,7 @@ void run_server(server_cfg_t *server_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg_from_tx_buffer(int *target_fd, char *tx_msg) {
+void get_msg_from_tx_buffer(int *target_fd, msg_t *tx_msg) {
 
 	labeled_msg_t *labeled_msg;
 
@@ -54,7 +54,7 @@ void get_msg_from_tx_buffer(int *target_fd, char *tx_msg) {
 		if (!queue_empty(&tx_buffer)) {
 			labeled_msg = (labeled_msg_t*)queue_front(&tx_buffer);
 
-			strcpy(tx_msg, labeled_msg->msg);
+			*tx_msg = labeled_msg->msg;
 			*target_fd = labeled_msg->target_fd;
 			
 			queue_dequeue(&tx_buffer);
@@ -64,51 +64,51 @@ void get_msg_from_tx_buffer(int *target_fd, char *tx_msg) {
 	}
 }
 
-void push_msg_to_tx_buffer(int target_fd, char *tx_msg) {
+void push_msg_to_tx_buffer(int target_fd, msg_t *tx_msg) {
 
 	labeled_msg_t *labeled_msg;
 
 	labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
 
-	strcpy(labeled_msg->msg, tx_msg);
+	labeled_msg->msg = *tx_msg;
 	labeled_msg->target_fd = target_fd;
 
 	queue_enqueue(&tx_buffer, labeled_msg);
 }
 
-void get_msg_from_rx_buffer(int *target_fd, char *rx_msg) {
+void get_msg_from_rx_buffer(int *target_fd, msg_t *rx_msg) {
 
-	labeled_msg_t *labeled_msg = (labeled_msg_t*)queue_front(&tx_buffer);
+	labeled_msg_t *labeled_msg = (labeled_msg_t*)queue_front(&rx_buffer);
 
-	strcpy(rx_msg, labeled_msg->msg);
+	*rx_msg = labeled_msg->msg;
 	*target_fd = labeled_msg->target_fd;
 	
 	queue_dequeue(&rx_buffer);
 }
 
-void push_msg_to_rx_buffer(int target_fd, char *rx_msg) {
+void push_msg_to_rx_buffer(int target_fd, msg_t *rx_msg) {
 
 	labeled_msg_t *labeled_msg;
 
 	labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
 
-	strcpy(labeled_msg->msg, rx_msg);
+	labeled_msg->msg = *rx_msg;
 	labeled_msg->target_fd = target_fd;
 
-	queue_enqueue(&tx_buffer, labeled_msg);
+	queue_enqueue(&rx_buffer, labeled_msg);
 }
 
 void *transmit(void *arg) {
 	
 	// tx message buffer
-	char tx_msg[SIZE_BUFFER];
+	msg_t tx_msg;
 
 	int target_fd = 4;
 
 	while(1) {
-		get_msg_from_tx_buffer(&target_fd, tx_msg);
+		get_msg_from_tx_buffer(&target_fd, &tx_msg);
 		if (FD_ISSET(target_fd, &readfds)) {
-			write(target_fd, tx_msg, SIZE_BUFFER);
+			write(target_fd, &tx_msg, SIZE_BUFFER);
 		}
 		else {
 			printf("fd %d didn't set\n", target_fd);
@@ -119,7 +119,7 @@ void *transmit(void *arg) {
 void *receive(void *arg) {
 	
 	// rx message buffer
-	char rx_msg[SIZE_BUFFER];
+	msg_t rx_msg;
 
 	int 	result, fd, nread, client_len;
 	fd_set 	testfds;
@@ -164,9 +164,9 @@ void *receive(void *arg) {
 						printf("removing client on fd %d\n", fd);
 					}
 					else {
-						read(fd, rx_msg, SIZE_BUFFER);
+						read(fd, &rx_msg, SIZE_BUFFER);
+						push_msg_to_rx_buffer(fd, &rx_msg);
 						printf("serving client on fd %d\n", fd);
-						printf("msg from client on fd %d: %s\n", fd, rx_msg);
 						// sleep(1);	// it will make server more secure
 
 						// echo response - for test
@@ -184,18 +184,19 @@ void *receive(void *arg) {
 
 void *process(void *arg) {
 	
-	char input[SIZE_BUFFER];
-	int fd;
+	msg_t rx_msg, tx_msg;
+	int fd, temp_type;
 
 	while (1) {
 		// check rx_buffer
 		if (!queue_empty(&rx_buffer)) {
-			get_msg_from_rx_buffer(&fd, input);
-			printf("msg from fd %d : %s\n", fd, input);
+			get_msg_from_rx_buffer(&fd, &rx_msg);
+			printf("msg from fd %d : %d %d\n", fd, rx_msg.type, rx_msg.data);
 		}
 
-		// scanf("%d-%s", &fd, input);
-		// push_msg_to_tx_buffer(fd, input);
+		// scanf("%d-%d-%d", &fd, &temp_type, &(tx_msg.data));
+		// tx_msg.type = (msg_type_t)temp_type;
+		// push_msg_to_tx_buffer(fd, &tx_msg);
 
 		sleep(T_BUFFER_CHECK);
 	}

@@ -11,12 +11,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <string.h>
 #include <pthread.h>
 
 #include "queue.h"
+#include "message.h"
 
-#define SIZE_BUFFER 	16
+#define SIZE_BUFFER		sizeof(msg_t)
 #define T_BUFFER_CHECK	0.1
 
 
@@ -37,7 +37,7 @@ queue tx_buffer, rx_buffer;
 
 typedef struct _labeled_msg_t {
 	int target_fd;
-	char msg[SIZE_BUFFER];
+	msg_t msg;
 } labeled_msg_t;
 
 typedef struct _server_cfg_t {
@@ -51,11 +51,11 @@ typedef struct _rx_arg_t {
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
 
-void get_msg_from_tx_buffer(int *target_fd, char *tx_msg); // blocking
-void push_msg_to_tx_buffer(int target_fd, char *tx_msg);   // non-blocking
+void get_msg_from_tx_buffer(int *target_fd, msg_t *tx_msg); // blocking
+void push_msg_to_tx_buffer(int target_fd, msg_t *tx_msg);   // non-blocking
 
-void get_msg_from_rx_buffer(int *target_fd, char *rx_msg); // non-blocking
-void push_msg_to_rx_buffer(int target_fd, char *rx_msg);   // non-blocking
+void get_msg_from_rx_buffer(int *target_fd, msg_t *rx_msg); // non-blocking
+void push_msg_to_rx_buffer(int target_fd, msg_t *rx_msg);   // non-blocking
 
 void *transmit(void *arg);
 void *receive(void *arg);

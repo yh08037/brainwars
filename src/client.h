@@ -9,13 +9,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <string.h>
 #include <pthread.h>
 
 #include "queue.h"
+#include "message.h"
 
-#define SIZE_BUFFER		16
+
+#define SIZE_BUFFER		sizeof(msg_t)
 #define T_BUFFER_CHECK	0.1
+
 
 static void usage(void) {
     fprintf(stderr, "\n"
@@ -43,11 +45,11 @@ typedef struct _client_arg_t {
 void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
 void run_client(client_cfg_t *client_cfg);
 
-void get_msg_from_tx_buffer(char *tx_msg); // blocking
-void push_msg_to_tx_buffer(char *tx_msg);  // non-blocking
+void get_msg_from_tx_buffer(msg_t *tx_msg); // blocking
+void push_msg_to_tx_buffer(msg_t *tx_msg);  // non-blocking
 
-void get_msg_from_rx_buffer(char *rx_msg); // non-blocking
-void push_msg_to_rx_buffer(char *rx_msg);  // non-blocking
+void get_msg_from_rx_buffer(msg_t *rx_msg); // non-blocking
+void push_msg_to_rx_buffer(msg_t *rx_msg);  // non-blocking
 
 void *transmit(void *arg);
 void *receive(void *arg);
