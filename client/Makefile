@@ -1,15 +1,10 @@
-
-CC=gcc
-CFLAGS=-c
-LFLAGS=-lpthread
 TARGET=client
-OBJS=main.o client.o queue.o
 
-$(TARGET):$(OBJS)
-	$(CC) -o $@ $^ $(LFLAGS)
-
-.c.o:
-	$(CC) $(CFLAGS) $< -o $@
+all:
+	gcc -c ../src/$(TARGET).c -o $(TARGET).o
+	gcc -c ../src/queue.c -o queue.o
+	gcc -c main.c -o main.o -I../src/
+	gcc -o $(TARGET) main.o $(TARGET).o queue.o -lpthread
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET) main.o $(TARGET).o queue.o
