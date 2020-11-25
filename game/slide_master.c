@@ -1,3 +1,6 @@
+// $ gcc -o slide_master slide_master.c
+// $ ./slide_master
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -6,23 +9,15 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <stdint.h>
-#include <string.h>
 #include <linux/fb.h>
 #include <sys/ioctl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
-#include <stdint.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <linux/input.h>
 #include <time.h>
 #include <stdbool.h>
 
-#define FILEPATH "/dev/fb0"
+#define LEDMATRIX_PATH "/dev/fb0"
 #define JOYSTICK_PATH "/dev/input/event0"
 #define NUM_WORDS 64
 #define FILESIZE (NUM_WORDS * sizeof(uint16_t))
@@ -31,118 +26,144 @@
 #define RGB565_GREEN 0x07E0
 #define RGB565_BLUE 0x001F
 
-typedef enum {
-    North = 0,
-    South,
-    East,
-    West
-} Direction;
-
-void delay(int);
-void arrow(uint16_t *, Direction, int);
-int random_arrow(uint16_t *, int*, int*);
-bool check(int, int, int);
-void rotate_cww90(uint16_t *, int[], int);
-
-int main(void){
-    int fd;
-    fd = open(JOYSTICK_PATH, O_RDONLY);
-    struct input_event ev;
-
-    int i;
+typedef struct {
     int fbfd;
     uint16_t *map;
-    uint16_t *p;
     struct fb_fix_screeninfo fix_info;
+} Led_matrix;
+
+typedef struct {
+    int fd;
+    struct input_event ev;
+} Joystick;
+
+typedef struct {
+    bool state_isCorrect;
+    int *direction, direction_v;
+    int *color, color_v;
+} Slide_master;
+
+void slide_master_game(Led_matrix* led_matrix, Joystick *joystick, Slide_master *slide_master);
+bool joystick_command(Joystick *joystick);
+void init_slide_master(Slide_master* slide_master);
+void open_led_matrix(Led_matrix *led_matrix);
+void close_led_matrix(Led_matrix *led_matrix);
+void open_joystick(Joystick *joystick);
+int random_arrow(uint16_t *p, int *direction, int *color);
+void arrow(uint16_t *p, int direction, int color_code);
+bool check(int answer_direction, int answer_color, int direction);
+void rotate_cww90(uint16_t *p, int shape[], int color_code);
+void delay(int t);
+
+int main(void){
+
+    Led_matrix *led_matrix, led_matrix_v;
+    led_matrix = &led_matrix_v;
+
+    Joystick *joystick, joystick_v;
+    joystick = &joystick_v;
+
+    Slide_master *slide_master, slide_master_v;
+    slide_master = &slide_master_v;
 
     srand(time(NULL));
 
-    fbfd = open(FILEPATH, O_RDWR);
-    if (fbfd == -1){
+    open_led_matrix(led_matrix);
+    open_joystick(joystick);
+    init_slide_master(slide_master);
+
+    slide_master_game(led_matrix, joystick, slide_master);
+
+    close_led_matrix(led_matrix);
+    return 0;
+}
+
+void slide_master_game(Led_matrix* led_matrix, Joystick *joystick, Slide_master *slide_master){
+    while(true)
+    {
+        if (slide_master->state_isCorrect == true){
+            memset(led_matrix->map, 0, FILESIZE);
+            delay(100);
+            random_arrow(led_matrix->map, slide_master->direction, slide_master->color);
+            slide_master->state_isCorrect = false;
+            continue;
+        }
+
+        if (joystick_command(joystick)){
+            slide_master->state_isCorrect = check(*slide_master->direction, *slide_master->color, joystick->ev.code);
+
+            if (slide_master->state_isCorrect == false){
+                for (int i = 0; i < 4; i++){
+                    memset(led_matrix->map, 0, FILESIZE);
+                    delay(100);
+                    arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
+                    delay(100);
+                
+                }
+            }
+        }        
+    }
+}
+
+bool joystick_command(Joystick *joystick){
+    if(read(joystick->fd, &joystick->ev, sizeof(struct input_event)) < 0) {
+        if(errno == EINTR)
+            return false;
+ 
+        exit(1);
+    }
+ 
+    if(EV_KEY != joystick->ev.type || joystick->ev.value != 1)
+        return false;
+    return true;
+}
+
+void init_slide_master(Slide_master *slide_master){
+    slide_master->state_isCorrect = true;
+    slide_master->direction = &slide_master->direction_v;
+    slide_master->color = &slide_master->color_v;
+}
+
+void open_led_matrix(Led_matrix *led_matrix){
+    
+    led_matrix->fbfd = open(LEDMATRIX_PATH, O_RDWR);
+    if (led_matrix->fbfd == -1){
         perror("Error (call to 'open')");
         exit(EXIT_FAILURE);
     }
 
-    if (ioctl(fbfd, FBIOGET_FSCREENINFO, &fix_info) == -1){
+    if (ioctl(led_matrix->fbfd, FBIOGET_FSCREENINFO, &led_matrix->fix_info) == -1){
         perror("Error (call to 'ioctl')");
-        close(fbfd);
+        close(led_matrix->fbfd);
         exit(EXIT_FAILURE);
     }
 
-    if (strcmp(fix_info.id, "RPi-Sense FB") != 0){
+    if (strcmp(led_matrix->fix_info.id, "RPi-Sense FB") != 0){
         printf("%s\n", "Error: RPi-Sense FB not fount");
-        close(fbfd);
+        close(led_matrix->fbfd);
         exit(EXIT_FAILURE);
     }
 
-    map = mmap(NULL, FILESIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-    if (map == MAP_FAILED){
-        close(fbfd);
+    led_matrix->map = mmap(NULL, FILESIZE, PROT_READ | PROT_WRITE, MAP_SHARED, led_matrix->fbfd, 0);
+    if (led_matrix->map == MAP_FAILED){
+        close(led_matrix->fbfd);
         perror("Error mmapping the file");
         exit(EXIT_FAILURE);
     }
-
-    p = map;
-
-    memset(map, 0, FILESIZE);
-
-    // init setup finished
-
-    bool state_isCorrect = true;
-    int direction_v = 0, color_v = 0;
-    int *direction, *color;
-    direction = &direction_v;
-    color = &color_v;
-    
-    while(1)
-    {
-        if (state_isCorrect == true){
-            memset(map, 0, FILESIZE);
-            delay(100);
-            random_arrow(p, direction, color);
-            state_isCorrect = false;
-            continue;
-        }
-
-        if(read(fd, &ev, sizeof(struct input_event)) < 0)
-        {
-            if(errno == EINTR)
-                continue;
- 
-            break;
-        }
- 
-        if(EV_KEY != ev.type || ev.value != 1)
-            continue;
-
-        state_isCorrect = check(*direction, *color, ev.code);
-
-        if (state_isCorrect == false){
-            for(i = 0; i < 4; i++){
-                memset(p, 0, FILESIZE);
-                delay(100);
-                arrow(p, *direction, *color == 0 ? RGB565_RED : RGB565_BLUE);
-                delay(100);
-            }
-        }
-    }
-
-    // setup close
-
-    memset(map, 0, FILESIZE);
-
-    if (munmap(map, FILESIZE) == -1){
-        perror("Error un-mmapping the file");
-    }
-    close(fbfd);
-    
-    return 0;
+    memset(led_matrix->map, 0, FILESIZE);
 }
 
+void close_led_matrix(Led_matrix *led_matrix){
+    memset(led_matrix->map, 0, FILESIZE);
 
-void delay(int t)
-{
-    usleep(t*1000);
+    if (munmap(led_matrix->map, FILESIZE) == -1){
+        perror("Error un-mmapping the file");
+    }
+    close(led_matrix->fbfd);
+}
+
+void open_joystick(Joystick *joystick){
+    joystick->fd = open(JOYSTICK_PATH, O_RDONLY);
 }
 
 int random_arrow(uint16_t *p, int *direction, int *color){ // p - input, direction color - output
@@ -158,9 +179,9 @@ int random_arrow(uint16_t *p, int *direction, int *color){ // p - input, directi
     arrow(p, direction_random, color_random);
 }
 
-void arrow(uint16_t *p, Direction direction, int color){
+void arrow(uint16_t *p, int direction, int color_code){
     // printf("%d, %d\n", direction, color);
-    int arrow_shape[4][64] = { // North, South, East, West
+    int arrow_shape[4][64] = { // Up, Left, Right, Down
     {
         0,0,0,1,1,0,0,0,
         0,0,1,1,1,1,0,0,
@@ -200,7 +221,7 @@ void arrow(uint16_t *p, Direction direction, int color){
 
     };
 
-    rotate_cww90(p, arrow_shape[direction], color);
+    rotate_cww90(p, arrow_shape[direction], color_code);
 }
 
 bool check(int answer_direction, int answer_color, int direction){
@@ -212,7 +233,7 @@ bool check(int answer_direction, int answer_color, int direction){
 
 }
 
-void rotate_cww90(uint16_t *p, int shape[], int color){
+void rotate_cww90(uint16_t *p, int shape[], int color_code){
     memset(p, 0, FILESIZE);
 
     // for (int i = 0; i < 64; i++){
@@ -244,7 +265,11 @@ void rotate_cww90(uint16_t *p, int shape[], int color){
     // printf("\n");
 
     for (int i = 0; i < NUM_WORDS; i++){
-        if (shape[rotate[i]] == 1)    *(p+i) = color;
+        if (shape[rotate[i]] == 1)    *(p+i) = color_code;
     }
 
+}
+
+void delay(int t){
+    usleep(t*1000);
 }
