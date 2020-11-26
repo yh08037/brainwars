@@ -88,11 +88,11 @@ brainwars                      brainwars
 
 ``` c
 typedef enum _msg_type_t {
-	MSG_SELECT = 0,     // server -> client
-	MSG_READY,          // client -> server
-	MSG_START,          // server -> client
-	MSG_FINISH,         // client -> server
-	MSG_RESULT          // server -> client
+    MSG_SELECT = 0,     // server -> client
+    MSG_READY,          // client -> server
+    MSG_START,          // server -> client
+    MSG_FINISH,         // client -> server
+    MSG_RESULT          // server -> client
 } msg_type_t;
 
 typedef struct _msg_t {
