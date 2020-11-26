@@ -31,10 +31,8 @@
 #define RGB565_WEAKGREEN 0x01E0
 #define RGB565_WHITE 0xFFFF
 
-// #define RING_BRIGHT 6
-#define TIME_CORRECTION_READY 300
-#define TIME_CORRECTION 300
-#define PLAY_TIME 20
+#define PLAY_TIME 20 //sec
+#define DELAY_SYNC 50 //ms
 
 typedef struct {
     int fbfd;
@@ -120,14 +118,12 @@ void slide_master_game(led_matrix_t* led_matrix){
 
     while(true)
     {
-        //memset(led_matrix->map, 0, FILESIZE);
-        //printf("%d, %d\n", joystick_thread.joystick.ev.type, joystick_thread.joystick.ev.value);
         check_time = wtime();
         elapsed_time = check_time - start_time;
+        
 
-        //printf("%f\n", elapsed_time);
         if (elapsed_time > PLAY_TIME){
-            printf("Game Finished~ Score : %d\n", score);
+            //printf("Game Finished~ Score : %d\n", score);
             is_thread_stop = true;
             break;
         }
@@ -141,8 +137,6 @@ void slide_master_game(led_matrix_t* led_matrix){
             score += 2;
             continue;
         }
-
-        printf("%d %d %d\n", joystick_data.ev.code, joystick_data.ev.type, joystick_data.ev.value);
 
         if (joystick_data.ev.type != 0 && joystick_data.ev.value == 1){
             slide_master->state_isCorrect = check(*slide_master->direction, *slide_master->color, joystick_data.ev.code);
@@ -164,7 +158,7 @@ void slide_master_game(led_matrix_t* led_matrix){
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
         }    
 
-        delay(10);
+        delay(DELAY_SYNC);
     }
 
     disp_score(led_matrix->map, score);
@@ -174,6 +168,11 @@ void slide_master_game(led_matrix_t* led_matrix){
 void disp_score(uint16_t *map, int score){
     memset(map, 0, FILESIZE);
 
+    if (score >= 100){
+        printf("MAX score! score: %d", score);
+        score = 99;
+    }
+
     int ten_degit = score / 10;
     int one_degit = score - ten_degit * 10;
 
@@ -182,7 +181,6 @@ void disp_score(uint16_t *map, int score){
 }
 
 void disp_num(uint16_t *map, int degit, int x_pos, int y_pos){
-    printf("%d\n", degit);
     int num_position_init[15] = {
         56, 48, 40,
         57, 49, 41,
@@ -273,7 +271,6 @@ void disp_num(uint16_t *map, int degit, int x_pos, int y_pos){
     }
 }
 
-
 void slide_master_game_ready(uint16_t *map){
     memset(map, 0, FILESIZE);
     double start_time, check_time, elapsed_time;
@@ -281,7 +278,6 @@ void slide_master_game_ready(uint16_t *map){
 
     while(1){
         check_time = wtime();
-        //elapsed_time = (double)(check_time - start_time) * TIME_CORRECTION_READY / CLOCKS_PER_SEC;
         elapsed_time = check_time - start_time;
 
         if (elapsed_time > 3){
@@ -305,7 +301,6 @@ void slide_master_game_ready(uint16_t *map){
 
 void number_countdown(uint16_t *map, int number){
     memset(map, 0, FILESIZE);
-    // printf("%d, %d\n", direction, color);
     int num_shape[3][64] = { // 1, 2, 3
     {
         0,0,0,0,0,0,0,0,
@@ -342,8 +337,6 @@ void number_countdown(uint16_t *map, int number){
 
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_addColor){
     int k, new_color_code;
-    // printf("%f, %f\n", left_time, max_time);
-
     RGB565_t current_color_code, add_color_code;
     int ring_order[28] = { 32, 40, 48, 56, 57, 58, 59, 60, 61, 62, 63, 55, 47, 39, 31, 23, 15, 7, 6, 5, 4, 3, 2, 1, 0, 8, 16, 24};
 
@@ -353,8 +346,6 @@ void ring(uint16_t *map, double left_time, double max_time, int color_code, bool
             current_color_code.R = (*(map+k) & 1111100000000000) >> 11;
             current_color_code.G = (*(map+k) & 11111100000) >> 5;
             current_color_code.B = (*(map+k) & 11111);
-
-            //printf("%d %d %d\n", current_color_code.R, current_color_code.G, current_color_code.B);
 
             add_color_code.R = (color_code & 1111100000000000) >> 11;
             add_color_code.G = (color_code & 11111100000) >> 5;
@@ -368,8 +359,6 @@ void ring(uint16_t *map, double left_time, double max_time, int color_code, bool
 
             if (current_color_code.B + add_color_code.B < 31) current_color_code.B += add_color_code.B;
             else current_color_code.B = 31;
-            // if (current_color_code.B != 0) current_color_code.B = 31;
-            // else current_color_code.B = 0;
 
             new_color_code = (current_color_code.R << 11) | (current_color_code.G << 5) | current_color_code.B;
 
@@ -386,14 +375,8 @@ void ring(uint16_t *map, double left_time, double max_time, int color_code, bool
 }
 
 int joystick_read_thread(){
-
     int res;
-    //joystick_arg_t arg;
     pthread_t joystick_thread;
-    //void *thread_result;
-
-    // arg.joystick.ev = joystick->ev;
-    // arg.joystick.fd = joystick->fd;
 
     res = pthread_create(&joystick_thread, NULL, joystick_command, NULL);
     if (res != 0){
@@ -401,38 +384,21 @@ int joystick_read_thread(){
         exit(EXIT_FAILURE);
     }
 
-    // res = pthread_join(joystick_thread, &thread_result);
-    // if (res != 0){
-    //     perror("Thread join failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
     return 0;
 }
 
 void *joystick_command(void *arg){
-    // joystick_arg_t joystick_arg;
-    // joystick_arg.joystick.fd = open(JOYSTICK_PATH, O_RDONLY);
-
     while (1){
-        //read(joystick_arg.joystick.fd, &joystick_arg.joystick.ev, sizeof(struct input_event));
-        //printf("%d\n", joystick_arg.joystick.ev.value);
-        //printf("%d %d\n", joystick_arg->joystick.ev.type, joystick_arg->joystick.ev.value);
-        // joystick_data.ev.type = joystick_arg.joystick.ev.type;
-        // joystick_data.ev.value = joystick_arg.joystick.ev.value;
-        // joystick_data.ev.code = joystick_arg.joystick.ev.code;
         read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 
-        //printf("%d %d %d\n", joystick_data.ev.code, joystick_data.ev.type, joystick_data.ev.value);
-        delay(10);
+        delay(DELAY_SYNC);
 
         if (is_thread_stop){
             break;
         }
-
-        //joystick_data.ev = joystick_arg.joystick.ev;
     }
 }
+
 void open_led_matrix(led_matrix_t *led_matrix){
     
     led_matrix->fbfd = open(LEDMATRIX_PATH, O_RDWR);
