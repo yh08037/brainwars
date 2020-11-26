@@ -20,9 +20,6 @@
 #define T_BUFFER_CHECK	0.1
 
 
-fd_set readfds;
-queue tx_buffer, rx_buffer;
-
 typedef struct _labeled_msg_t {
 	int target_fd;
 	msg_t msg;
@@ -36,11 +33,26 @@ typedef struct _rx_arg_t {
 	int server_sockfd;
 } rx_arg_t;
 
+typedef enum _server_state_t {
+	IP_SELECT = 0,
+	WF_READY,
+	IN_GAME,
+	DP_RESULT,
+} server_state_t;
+
+typedef enum _txrx_t{
+	TX = 0,
+	RX,
+} txrx_t;
+
+fd_set readfds;
+queue tx_buffer, rx_buffer;
+
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
 
-void get_msg_from_buffer(queue* buffer, int *target_fd, msg_t *msg);
-void push_msg_to_buffer(queue* buffer, int target_fd, msg_t *msg);
+void get_msg_from_buffer(txrx_t txrx, int *target_fd, msg_t *msg);
+void push_msg_to_buffer(txrx_t txrx, int target_fd, msg_t *msg);
 
 void *transmit(void *arg);
 void *receive(void *arg);

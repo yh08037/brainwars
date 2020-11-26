@@ -16,6 +16,10 @@ void init_server(server_cfg_t *server_cfg, int port_number) {
 	);
 
 	listen(server_cfg->server_sockfd, 5);
+	
+	// initialize tx_buffer / rx_buffer 
+	queue_init(&tx_buffer);
+	queue_init(&rx_buffer);	
 }
 
 void run_server(server_cfg_t *server_cfg) {
@@ -46,21 +50,44 @@ void run_server(server_cfg_t *server_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg_from_buffer(queue* buffer, int *target_fd, msg_t *msg) {
+void get_msg_from_buffer(txrx_t txrx, int *target_fd, msg_t *msg) {
 
+	queue *buffer;
 	labeled_msg_t *labeled_msg;
 
-	labeled_msg = (labeled_msg_t*)queue_front(buffer);
+	switch (txrx) {
+		case TX: buffer = &tx_buffer; break;
+		case RX: buffer = &rx_buffer; break;
+		default: exit(2);
+	}
 
+	while (1) {
+		if (!queue_empty(buffer)) {
+			labeled_msg = (labeled_msg_t*)queue_front(buffer);
+			break;
+		}
+		sleep(T_BUFFER_CHECK);
+	}
 	*msg = labeled_msg->msg;
 	*target_fd = labeled_msg->target_fd;
-	
 	queue_dequeue(buffer);
+
+	if (txrx == RX) {
+		printf("received from fd%d: ", *target_fd);
+		print_msg(msg);
+	}
 }
 
-void push_msg_to_buffer(queue* buffer, int target_fd, msg_t *msg) {
+void push_msg_to_buffer(txrx_t txrx, int target_fd, msg_t *msg) {
 
+	queue *buffer;
 	labeled_msg_t *labeled_msg;
+
+	switch (txrx) {
+		case TX: buffer = &tx_buffer; break;
+		case RX: buffer = &rx_buffer; break;
+		default: exit(2);
+	}
 
 	labeled_msg = (labeled_msg_t*)malloc(sizeof(labeled_msg_t));
 
@@ -68,6 +95,11 @@ void push_msg_to_buffer(queue* buffer, int target_fd, msg_t *msg) {
 	labeled_msg->target_fd = target_fd;
 
 	queue_enqueue(buffer, labeled_msg);
+
+	if (txrx == TX) {	
+		printf("transmitted to fd%d: ", target_fd);
+		print_msg(msg);
+	}
 }
 
 void *transmit(void *arg) {
@@ -77,13 +109,8 @@ void *transmit(void *arg) {
 	int target_fd = 4;
 
 	while(1) {
-		while (1) {
-			if (!queue_empty(&tx_buffer)) {
-				get_msg_from_buffer(&tx_buffer, &target_fd, &tx_msg);
-				break;
-			}
-			sleep(T_BUFFER_CHECK);
-		}
+		get_msg_from_buffer(TX, &target_fd, &tx_msg);
+				
 		if (FD_ISSET(target_fd, &readfds)) {
 			write(target_fd, &tx_msg, SIZE_BUFFER);
 		}
@@ -142,7 +169,7 @@ void *receive(void *arg) {
 					}
 					else {
 						read(fd, &rx_msg, SIZE_BUFFER);
-						push_msg_to_buffer(&rx_buffer, fd, &rx_msg);
+						push_msg_to_buffer(RX, fd, &rx_msg);
 						printf("serving client on fd %d\n", fd);
 						// sleep(1);	// it will make server more secure
 
@@ -162,19 +189,80 @@ void *receive(void *arg) {
 void *process(void *arg) {
 	
 	msg_t rx_msg, tx_msg;
-	int fd, temp_type;
+	server_state_t state = IP_SELECT;
+	int game, score1, score2, result1, result2;
+	int fd1 = 4, fd2 = 5;
+	char temp;
 
 	while (1) {
-		// check rx_buffer
-		if (!queue_empty(&rx_buffer)) {
-			get_msg_from_buffer(&rx_buffer, &fd, &rx_msg);
-			printf("msg from fd %d : %d %d\n", fd, rx_msg.type, rx_msg.data);
+		switch (state)
+		{
+		case IP_SELECT:
+			printf("waiting for select input...\n");
+			scanf("%d", &game);
+			getchar();
+
+			tx_msg.type = MSG_SELECT;
+			tx_msg.data = game;
+			push_msg_to_buffer(TX, fd1, &tx_msg);
+			sleep(1);
+			push_msg_to_buffer(TX, fd2, &tx_msg);
+			
+			printf("Selected game %d\n", game);
+			state = WF_READY;
+			break;
+
+		case WF_READY:
+			printf("waiting for game ready...\n");
+			
+			// need to fix!!!!!!
+			get_msg_from_buffer(RX, &fd1, &rx_msg);
+			get_msg_from_buffer(RX, &fd2, &rx_msg);
+
+			tx_msg.type = MSG_START;
+			tx_msg.data = 0;
+			push_msg_to_buffer(TX, fd1, &tx_msg);
+			push_msg_to_buffer(TX, fd2, &tx_msg);
+
+			state = IN_GAME;
+			break;
+
+		case IN_GAME:
+			printf("now gaming...\n");
+
+			// need to fix!!!!!!
+			get_msg_from_buffer(RX, &fd1, &rx_msg);
+			score1 = rx_msg.data;
+			get_msg_from_buffer(RX, &fd2, &rx_msg);
+			score2 = rx_msg.data;
+
+			result1 = (score1>score2) ? 0 : ((score1<score2) ? 1 : 2);
+			result2 = (score1<score2) ? 0 : ((score1>score2) ? 1 : 2);
+
+			tx_msg.type = MSG_RESULT;
+			tx_msg.data = result1;
+			push_msg_to_buffer(TX, fd1, &tx_msg);
+			tx_msg.data = result2;
+			push_msg_to_buffer(TX, fd2, &tx_msg);
+
+			state = DP_RESULT;
+			break;
+
+		case DP_RESULT:
+			switch (result1) {
+				case 0: printf("u1: lose   u2: win\n"); break;
+				case 1: printf("u1: win    u2: lose\n"); break;
+				case 2: printf("draw\n"); break;
+				default: printf("???\n");
+			}
+			printf("press any key to restart\n");
+			scanf("%c", &temp);
+			state = IP_SELECT;
+
+		default:
+			break;
 		}
-
-		scanf("%d-%d-%d", &fd, &temp_type, &(tx_msg.data));
-		tx_msg.type = (msg_type_t)temp_type;
-		push_msg_to_buffer(&tx_buffer, fd, &tx_msg);
-
-		sleep(T_BUFFER_CHECK);
+		printf("\n");
+		sleep(0.1);
 	}
 }

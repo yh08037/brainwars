@@ -57,20 +57,51 @@ void run_client(client_cfg_t *client_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg_from_buffer(queue *buffer, msg_t *msg) {
+void get_msg_from_buffer(txrx_t txrx, msg_t *msg) {
 
-	msg_t *temp = (msg_t*)queue_front(buffer);
+	queue *buffer;
+	msg_t *temp;
 
+	switch (txrx) {
+		case TX: buffer = &tx_buffer; break;
+		case RX: buffer = &rx_buffer; break;
+		default: exit(2);
+	}
+
+	while (1) {
+		if (!queue_empty(buffer)) {
+			temp = (msg_t*)queue_front(buffer);
+			break;
+		}
+		sleep(T_BUFFER_CHECK);
+	}
 	*msg = *temp;
 	queue_dequeue(buffer);
+
+	if (txrx == RX) {
+		printf("received: ");
+		print_msg(msg);
+	}
 }
 
-void push_msg_to_buffer(queue *buffer, msg_t *msg) {
+void push_msg_to_buffer(txrx_t txrx, msg_t *msg) {
 
+	queue *buffer;
 	msg_t *temp = (msg_t*)malloc(sizeof(msg_t));
+	
+	switch (txrx) {
+		case TX: buffer = &tx_buffer; break;
+		case RX: buffer = &rx_buffer; break;
+		default: exit(2);
+	}
 
 	*temp = *msg;
 	queue_enqueue(buffer, temp);
+
+	if (txrx == TX) {	
+		printf("transmitted: ");
+		print_msg(msg);
+	}
 }
 
 void *transmit(void *arg) {
@@ -83,13 +114,7 @@ void *transmit(void *arg) {
 	int sockfd = tx_arg->sockfd;
 
 	while (1) {
-		while (1) {
-			if (!queue_empty(&tx_buffer)) {
-				get_msg_from_buffer(&tx_buffer, &tx_msg);
-				break;
-			}
-			sleep(T_BUFFER_CHECK);
-		}
+		get_msg_from_buffer(TX, &tx_msg);
 		write(sockfd, &tx_msg, SIZE_BUFFER);
 	}
 }
@@ -105,26 +130,90 @@ void *receive(void *arg) {
 
 	while (1) {
 		read(sockfd, &rx_msg, SIZE_BUFFER);
-		push_msg_to_buffer(&rx_buffer, &rx_msg);
+		push_msg_to_buffer(RX, &rx_msg);
 	}
 }
 
 void *process(void *arg) {
 	
 	msg_t rx_msg, tx_msg;
-	int temp_type;
+	client_state_t state = WF_SELECT;
+	int game, score, result;
+	char temp;
 
 	while (1) {
-		// check rx_buffer
-		if (!queue_empty(&rx_buffer)) {
-			get_msg_from_buffer(&rx_buffer, &rx_msg);
-			printf("msg from server : %d %d\n", rx_msg.type, rx_msg.data);
+		switch (state)
+		{
+		case WF_SELECT:
+			printf("waiting for game select...\n");
+			get_msg_from_buffer(RX, &rx_msg);
+
+			game = rx_msg.data;
+			
+			printf("Selected game %d\n", game);
+			state = IP_READY;
+			break;
+
+		case IP_READY:
+			printf("waiting for ready input...\n");
+			scanf("%c", &temp);
+
+			tx_msg.type = MSG_READY;
+			tx_msg.data = 0;
+			push_msg_to_buffer(TX, &tx_msg);
+
+			state = WF_START;
+			break;
+
+		case WF_START:
+			printf("waiting for game start...\n");
+			get_msg_from_buffer(RX, &rx_msg);
+
+			printf("Start game %d!!!\n", game);
+			state = IN_GAME;
+			break;
+
+		case IN_GAME:
+			for (int i = T_GAME; i > 0; i--) {
+				printf("%d\n", i);
+				sleep(1);
+			}
+			printf("\n");
+
+			score = 21;			
+			printf("game score: %d\n", score);
+
+			tx_msg.type = MSG_FINISH;
+			tx_msg.data = score;
+			push_msg_to_buffer(TX, &tx_msg);
+
+			state = WF_RESULT;
+			break;
+
+		case WF_RESULT:
+			printf("waiting for game result...\n");
+			get_msg_from_buffer(RX, &rx_msg);
+			
+			result = rx_msg.data;
+
+			state = DP_RESULT;
+			break;
+
+		case DP_RESULT:
+			switch (result) {
+				case 0: printf("lose\n"); break;
+				case 1: printf("win\n"); break;
+				case 2: printf("draw\n"); break;
+				default: printf("???\n");
+			}
+			printf("press any key to restart");
+			scanf("%c", &temp);
+			state = WF_SELECT;
+
+		default:
+			break;
 		}
-		
-		// scanf("%d-%d", &temp_type, &(tx_msg.data));
-		// tx_msg.type = (msg_type_t)temp_type;
-		// push_msg_to_buffer(&tx_buffer, &tx_msg);
-		
-		sleep(T_BUFFER_CHECK);
+		printf("\n");
+		sleep(0.1);
 	}
 }
