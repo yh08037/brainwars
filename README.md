@@ -63,3 +63,47 @@ joystick의 입력을 받을 수 있는 코드 구현
 
 게임 끝나면 점수 표시 후 사라짐
 
+#### 소스 파일들의 위치 변경
+`queue.h` `queue.c`의 중복, main 폴더 내의 파일이 너무 많아짐에 따라 main을 제외한 나머지 파일을 src 폴더로 이동
+
+이에 따라 Makfile을 수정하였음
+```
+brainwars                      brainwars
++---client                     +---src
+|   +---client.h               |   +---client.h
+|   +---client.c               |   +---client.c
+|   +---queue.h                |   +---server.h
+|   +---queue.c                |   +---server.c
+|   \---main.c       --->      |   +---queue.h
+\---server                     |   \---queue.c
+    +---server.h               +---client
+    +---server.c               |   \---main.c
+    +---queue.h                \---server
+    +---queue.c                    \---main.c
+    \---main.c
+```
+
+#### client/server - 메시지 자료형 변경 (문자열->구조체)
+
+``` c
+typedef enum _msg_type_t {
+	MSG_SELECT = 0,     // server -> client
+	MSG_READY,          // client -> server
+	MSG_START,          // server -> client
+	MSG_FINISH,         // client -> server
+	MSG_RESULT          // server -> client
+} msg_type_t;
+
+typedef struct _msg_t {
+    msg_type_t type;
+    int data;
+} msg_t;
+```
+이전까지는 송수신 기능 테스트를 위해 데이터를 문자열로 사용하였음
+
+메시지의 송수신에 대한 기능검증이 완료되었으므로 
+
+brainwars 게임 구동에 필요한 정보를 고려하여 메시지 구조체 타입을 정의함
+
+
+
