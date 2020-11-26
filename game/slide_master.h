@@ -65,7 +65,7 @@ typedef struct {
 
 void slide_master_game(led_matrix_t *led_matrix); // call this function to start slide_master
 void disp_score(uint16_t *map, int score);
-void disp_num(uint16_t *map, int degit, int x_pos, int y_pos);
+void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
 void slide_master_game_ready(uint16_t *map);
 void number_countdown(uint16_t *map, int number);
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
