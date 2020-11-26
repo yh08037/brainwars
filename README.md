@@ -35,6 +35,7 @@ joystick의 입력을 받을 수 있는 코드 구현
 파란색 화살표면 화살표 반대로 입력, 빨간색 화살표면 반대로 입력
 
 오답시 깜빡깜빡하게 만들었음
+
 ![arrow](images/slide_master_arrow.png)
 
 #### client/server - main 함수 인터페이스 단순화 
