@@ -60,7 +60,7 @@ typedef struct {
     unsigned int R : 5;
 } RGB565_t;
 
-void slide_master_game(led_matrix_t* led_matrix);
+void slide_master_game(led_matrix_t *led_matrix); // call this function to start slide_master
 void disp_score(uint16_t *map, int score);
 void disp_num(uint16_t *map, int degit, int x_pos, int y_pos);
 void slide_master_game_ready(uint16_t *map);
@@ -68,7 +68,7 @@ void number_countdown(uint16_t *map, int number);
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
 int joystick_read_thread();
 void *joystick_command(void *arg);
-void init_slide_master(slide_master_t* slide_master);
+void init_slide_master(slide_master_t *slide_master);
 void open_led_matrix(led_matrix_t *led_matrix);
 void close_led_matrix(led_matrix_t *led_matrix);
 void open_joystick(joystick_t *joystick);

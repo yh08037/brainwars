@@ -7,15 +7,15 @@ int main(void){
 
     open_led_matrix(led_matrix);
 
-    slide_master_game(led_matrix);
+    slide_master_game(led_matrix); // call this function to start slide master.
 
     close_led_matrix(led_matrix);
     return 0;
 }
 
-void slide_master_game(led_matrix_t* led_matrix){
+void slide_master_game(led_matrix_t *led_matrix){
     srand(time(NULL));
-    
+
     int score = 0;
     double start_time, check_time;
     double elapsed_time;
