@@ -34,6 +34,9 @@
 #define PLAY_TIME 20 //sec
 #define DELAY_SYNC 50 //ms
 
+#define CORRECT_POINT 3
+#define WRONG_POINT -2
+
 typedef struct {
     int fbfd;
     uint16_t *map;
@@ -134,7 +137,7 @@ void slide_master_game(led_matrix_t* led_matrix){
             random_arrow(led_matrix->map, slide_master->direction, slide_master->color);
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
             slide_master->state_isCorrect = false;
-            score += 2;
+            score += CORRECT_POINT;
             continue;
         }
 
@@ -150,7 +153,7 @@ void slide_master_game(led_matrix_t* led_matrix){
                     delay(100);
                 
                 }
-                if (score != 0) score--;
+                if (score != 0) score += WRONG_POINT;
                 }
         }
         else{
