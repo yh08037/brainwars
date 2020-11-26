@@ -16,7 +16,7 @@ int main(void){
 void slide_master_game(led_matrix_t *led_matrix){
     srand(time(NULL));
 
-    int score = 0;
+    int score = -CORRECT_POINT;
     double start_time, check_time;
     double elapsed_time;
 
@@ -89,19 +89,42 @@ void slide_master_game(led_matrix_t *led_matrix){
 void disp_score(uint16_t *map, int score){
     memset(map, 0, FILESIZE);
 
+    int color_code = RGB565_WHITE;
+
     if (score >= 100){
-        printf("MAX score! score: %d", score);
+        printf("MAX score! score: %d\n", score);
+        for (int i = 0; i < score - 99 ; i++){
+            *(map+(56-8*i)) = RGB565_BLUE;
+            color_code = RGB565_BLUE;
+            if (i == 7){
+                break;
+            }
+        }
+        for (int i = 0; i < score - 107; i++){
+            *(map+(56-8*i)) = RGB565_GREEN;
+            color_code = RGB565_GREEN;
+            if (i == 7){
+                break;
+            }
+        }
+        for (int i = 0; i < score - 115; i++){
+            *(map+(56-8*i)) = RGB565_RED;
+            color_code = RGB565_RED;
+            if (i == 7){
+                break;
+            }
+        }
         score = 99;
     }
 
     int ten_degit = score / 10;
     int one_degit = score - ten_degit * 10;
 
-    if (ten_degit != 0)    disp_num(map, ten_degit, 1, 2);
-    disp_num(map, one_degit, 5, 2);
+    if (ten_degit != 0)    disp_num(map, ten_degit, 1, 2, color_code);
+    disp_num(map, one_degit, 5, 2, color_code);
 }
 
-void disp_num(uint16_t *map, int degit, int x_pos, int y_pos){
+void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code){
     int num_position_init[15] = {
         56, 48, 40,
         57, 49, 41,
@@ -187,7 +210,7 @@ void disp_num(uint16_t *map, int degit, int x_pos, int y_pos){
     for (int i = 0; i < 15; i++){
         if (numbers[degit][i] == 1){
             num_position[i] = num_position_init[i] - 8*x_pos + y_pos;
-            *(map+num_position[i]) = RGB565_WHITE;
+            *(map+num_position[i]) = color_code;
         }
     }
 }
