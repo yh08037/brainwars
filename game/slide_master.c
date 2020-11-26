@@ -114,7 +114,10 @@ void disp_score(uint16_t *map, int score){
                 break;
             }
         }
-        score = 99;
+        disp_num(map, 9, 1, 2, color_code);
+        disp_num(map, 9, 5, 2, color_code);
+
+        return;
     }
 
     int ten_degit = score / 10;
