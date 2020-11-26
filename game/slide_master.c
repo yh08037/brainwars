@@ -7,16 +7,22 @@ int main(void){
 
     open_led_matrix(led_matrix);
 
-    slide_master_game(led_matrix); // call this function to start slide master.
+    result_t *result;
+    result_t result_v;
+    result = &result_v;
+
+    slide_master_game(result, led_matrix); // call this function to start slide master.
 
     close_led_matrix(led_matrix);
     return 0;
 }
 
-void slide_master_game(led_matrix_t *led_matrix){
+void slide_master_game(result_t *result, led_matrix_t *led_matrix){
+
     srand(time(NULL));
 
-    int score = -CORRECT_POINT;
+    result->correct = -1;
+    result->wrong = 0;
     double start_time, check_time;
     double elapsed_time;
 
@@ -55,7 +61,7 @@ void slide_master_game(led_matrix_t *led_matrix){
             random_arrow(led_matrix->map, slide_master->direction, slide_master->color);
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
             slide_master->state_isCorrect = false;
-            score += CORRECT_POINT;
+            result->correct++;
             continue;
         }
 
@@ -71,8 +77,7 @@ void slide_master_game(led_matrix_t *led_matrix){
                     delay(100);
                 
                 }
-                if (score != 0) score += WRONG_POINT;
-                }
+                result->wrong;
         }
         else{
             arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
@@ -80,10 +85,15 @@ void slide_master_game(led_matrix_t *led_matrix){
         }    
 
         delay(DELAY_SYNC);
+        }
     }
+
+    int score = result->correct * CORRECT_POINT + result->wrong * WRONG_POINT;
+    if (score < 0) score = 0;
 
     disp_score(led_matrix->map, score);
     delay(5000);
+    return result;
 }
 
 void disp_score(uint16_t *map, int score){

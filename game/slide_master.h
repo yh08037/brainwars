@@ -63,7 +63,12 @@ typedef struct {
     unsigned int R : 5;
 } RGB565_t;
 
-void slide_master_game(led_matrix_t *led_matrix); // call this function to start slide_master
+typedef struct _result_t {
+    int correct;
+    int wrong;
+} result_t;
+
+void slide_master_game(result_t *result, led_matrix_t *led_matrix); // call this function to start slide_master
 void disp_score(uint16_t *map, int score);
 void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
 void slide_master_game_ready(uint16_t *map);
