@@ -33,6 +33,7 @@ joystick의 입력을 받을 수 있는 디바이스 드라이버 구현
 #### slide_mater 일부 구현
 파란색 화살표면 화살표 반대로 입력, 빨간색 화살표면 반대로 입력
 오답시 깜빡깜빡하게 만들었음
+![arrow](images/slide_master_arrow.png)
 
 #### client/server - main 함수 인터페이스 단순화 
 소켓, 쓰레드 설정등의 코드를 init/run 함수로 분리해 main 함수를 읽기 쉽게 함
@@ -48,4 +49,4 @@ joystick의 입력을 받을 수 있는 디바이스 드라이버 구현
 
 #### slider master 코드 최적화
 코드 블럭화 시켜 코드를 옮기기 편하게 만들었음
-![shortcode](images/slider_master_shortcode.png)
+![shortcode](images/slide_master_shortcode.png)

@@ -57,14 +57,14 @@ void run_client(client_cfg_t *client_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg_from_tx_buffer(char *tx_msg) {
+void get_msg_from_tx_buffer(msg_t *tx_msg) {
 
-	char *temp;
+	msg_t *temp;
 
 	while (1) {
 		if (!queue_empty(&tx_buffer)) {
-			temp = (char*)queue_front(&tx_buffer);
-			strcpy(tx_msg, temp);
+			temp = (msg_t*)queue_front(&tx_buffer);
+			*tx_msg = *temp;
 			queue_dequeue(&tx_buffer);
 			break;
 		}
@@ -72,86 +72,75 @@ void get_msg_from_tx_buffer(char *tx_msg) {
 	}
 }
 
-void push_msg_to_tx_buffer(char *tx_msg) {
+void push_msg_to_tx_buffer(msg_t *tx_msg) {
 
-	char *temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
-
-	strcpy(temp, tx_msg);
+	msg_t *temp = (msg_t*)malloc(sizeof(msg_t));
+	
+	*temp = *tx_msg;
 	queue_enqueue(&tx_buffer, temp);
 }
 
-void get_msg_from_rx_buffer(char *rx_msg) {
+void get_msg_from_rx_buffer(msg_t *rx_msg) {
 
-	char *temp = (char*)queue_front(&rx_buffer);
+	msg_t *temp = (msg_t*)queue_front(&rx_buffer);
 
-	strcpy(rx_msg, temp);
+	*rx_msg = *temp;
 	queue_dequeue(&rx_buffer);
 }
 
-void push_msg_to_rx_buffer(char *rx_msg) {
+void push_msg_to_rx_buffer(msg_t *rx_msg) {
 
-	char *temp = (char*)malloc(sizeof(char)*SIZE_BUFFER);
+	msg_t *temp = (msg_t*)malloc(sizeof(msg_t));
 
-	strcpy(temp, rx_msg);
+	*temp = *rx_msg;
 	queue_enqueue(&rx_buffer, temp);
 }
 
 void *transmit(void *arg) {
 	
 	// tx message buffer
-	char tx_msg[SIZE_BUFFER];
+	msg_t tx_msg;
 
 	client_arg_t *tx_arg = (client_arg_t*) arg;
 
 	int sockfd = tx_arg->sockfd;
 
 	while (1) {
-		get_msg_from_tx_buffer(tx_msg);
-		write(sockfd, tx_msg, SIZE_BUFFER);
-		
-		// move to command interpreter in future
-		if (strcmp(tx_msg, "quit")==0) {
-			printf("quit-tx_thread\n");
-			break;
-		}
+		get_msg_from_tx_buffer(&tx_msg);
+		write(sockfd, &tx_msg, SIZE_BUFFER);
 	}
 }
 
 void *receive(void *arg) {
 
 	// rx message buffer
-	char rx_msg[SIZE_BUFFER];
+	msg_t rx_msg;
 
 	client_arg_t *rx_arg = (client_arg_t*) arg;
 
 	int sockfd = rx_arg->sockfd;
 
 	while (1) {
-		read(sockfd, rx_msg, SIZE_BUFFER);
-		// printf("msg from server: %s\n", rx_msg);
-		push_msg_to_rx_buffer(rx_msg);
-
-		// move to command interpreter in future
-		if (strcmp(rx_msg, "quit")==0) {
-			printf("quit-rx_thread\n");
-			break;
-		}
+		read(sockfd, &rx_msg, SIZE_BUFFER);
+		push_msg_to_rx_buffer(&rx_msg);
 	}
 }
 
 void *process(void *arg) {
 	
-	char input[SIZE_BUFFER];
+	msg_t rx_msg, tx_msg;
+	int temp_type;
 
 	while (1) {
 		// check rx_buffer
 		if (!queue_empty(&rx_buffer)) {
-			get_msg_from_rx_buffer(input);
-			printf("msg from server : %s\n", input);
+			get_msg_from_rx_buffer(&rx_msg);
+			printf("msg from server : %d %d\n", rx_msg.type, rx_msg.data);
 		}
 		
-		// scanf("%s", input);
-		// push_msg_to_tx_buffer(input);
+		scanf("%d-%d", &temp_type, &(tx_msg.data));
+		tx_msg.type = (msg_type_t)temp_type;
+		push_msg_to_tx_buffer(&tx_msg);
 		
 		sleep(T_BUFFER_CHECK);
 	}
