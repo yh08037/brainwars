@@ -158,6 +158,7 @@ void *receive(void *arg) {
 					client_sockfd = accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
 					FD_SET(client_sockfd, &readfds);
 					printf("adding client on fd %d\n", client_sockfd);
+					num_client++;
 				}
 				else {
 					ioctl(fd, FIONREAD, &nread);
@@ -166,6 +167,7 @@ void *receive(void *arg) {
 						close(fd);
 						FD_CLR(fd, &readfds);
 						printf("removing client on fd %d\n", fd);
+						num_client--;
 					}
 					else {
 						read(fd, &rx_msg, SIZE_BUFFER);
@@ -189,7 +191,7 @@ void *receive(void *arg) {
 void *process(void *arg) {
 	
 	msg_t rx_msg, tx_msg;
-	server_state_t state = IP_SELECT;
+	server_state_t state = WF_USER;
 	int game, score1, score2, result1, result2;
 	int fd1 = 4, fd2 = 5;
 	char temp;
@@ -197,6 +199,19 @@ void *process(void *arg) {
 	while (1) {
 		switch (state)
 		{
+		case WF_USER:
+			if (num_client < 2) {
+				printf("waiting for user...\n");
+				while (1) {
+					if (num_client >= 2) {
+						break;
+					}
+					sleep(1);
+				}
+			}
+			state = IP_SELECT;
+			break;
+
 		case IP_SELECT:
 			printf("waiting for select input...\n");
 			scanf("%d", &game);
@@ -257,7 +272,7 @@ void *process(void *arg) {
 			}
 			printf("press any key to restart\n");
 			scanf("%c", &temp);
-			state = IP_SELECT;
+			state = WF_USER;
 
 		default:
 			break;
