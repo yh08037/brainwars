@@ -48,6 +48,8 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
         check_time = wtime();
         elapsed_time = check_time - start_time;
         
+        //arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
+        ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
 
         if (elapsed_time > PLAY_TIME){
             //printf("Game Finished~ Score : %d\n", score);
@@ -93,7 +95,6 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 
     disp_score(led_matrix->map, score);
     delay(5000);
-    return result;
 }
 
 void disp_score(uint16_t *map, int score){
@@ -293,12 +294,13 @@ void number_countdown(uint16_t *map, int number){
 }
 
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_addColor){
-    int k, new_color_code;
+    int i, k, new_color_code;
     RGB565_t current_color_code, add_color_code;
-    int ring_order[28] = { 32, 40, 48, 56, 57, 58, 59, 60, 61, 62, 63, 55, 47, 39, 31, 23, 15, 7, 6, 5, 4, 3, 2, 1, 0, 8, 16, 24};
+    //int ring_order[28] = { 32, 40, 48, 56, 57, 58, 59, 60, 61, 62, 63, 55, 47, 39, 31, 23, 15, 7, 6, 5, 4, 3, 2, 1, 0, 8, 16, 24};
+    int ring_order[28] = { 24, 16, 8, 0, 1, 2, 3, 4, 5, 6, 7, 15, 23, 31, 39, 47, 55, 63, 62, 61, 60, 59, 58, 57, 56, 48, 40, 32};
 
     if (is_addColor){
-        for (int i = 0; i < left_time / max_time * 28; i++){
+        for (i = 0; i < left_time / max_time * 28; i++){
             k = ring_order[27-i];
             current_color_code.R = (*(map+k) & 1111100000000000) >> 11;
             current_color_code.G = (*(map+k) & 11111100000) >> 5;
@@ -323,9 +325,16 @@ void ring(uint16_t *map, double left_time, double max_time, int color_code, bool
         }
     }
     else{
-        for (int i = 0; i < left_time / max_time * 28; i++){
-            k = ring_order[27-i];
-            if (*(map+k) == 0) *(map+k) = color_code;
+        for (i = 0; i < left_time / max_time * 28; i++){
+            k = ring_order[i];
+            if (*(map+k) == RGB565_OFF){
+                *(map+k) = color_code;
+            }
+        }
+        i++;
+        if (i < 28){
+            k = ring_order[i];
+            if (*(map+k) == RGB565_WEAKGREEN) *(map+k) = RGB565_OFF;
         }
     }
 

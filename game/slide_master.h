@@ -33,6 +33,7 @@
 #define RGB565_WEAKWHITE 0x7BEF
 #define RGB565_WEAKGREEN 0x01E0
 #define RGB565_WHITE 0xFFFF
+#define RGB565_OFF 0x0000
 
 #define PLAY_TIME 20 //sec
 #define DELAY_SYNC 50 //ms
