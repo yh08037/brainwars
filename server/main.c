@@ -2,6 +2,18 @@
 #include <string.h>
 
 
+static void usage(void) {
+    fprintf(stderr, "\n"
+		"usage: server [-h] [options]"
+		"\n"
+		"options:\n"
+		"    -h  show this message\n"
+		"    -p  port number of server (default: 9734)\n"
+		"\n"
+	);
+	exit(1);
+}
+
 int main(int argc, char* argv[])
 {
 	int	opt;

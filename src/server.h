@@ -20,18 +20,6 @@
 #define T_BUFFER_CHECK	0.1
 
 
-static void usage(void) {
-    fprintf(stderr, "\n"
-		"usage: server [-h] [options]"
-		"\n"
-		"options:\n"
-		"    -h  show this message\n"
-		"    -p  port number of server (default: 9734)\n"
-		"\n"
-	);
-	exit(1);
-}
-
 fd_set readfds;
 queue tx_buffer, rx_buffer;
 
