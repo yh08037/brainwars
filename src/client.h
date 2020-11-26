@@ -19,19 +19,6 @@
 #define T_BUFFER_CHECK	0.1
 
 
-static void usage(void) {
-    fprintf(stderr, "\n"
-		"usage: client [-h] [options]"
-		"\n"
-		"options:\n"
-		"    -h  show this message\n"
-		"    -d  ipv4 address of server (default: 155.230.107.136)\n"
-		"    -p  port number of server (default: 9734)\n"
-		"\n"
-	);
-	exit(1);
-}
-
 queue tx_buffer, rx_buffer;
 
 typedef struct _client_cfg_t {
