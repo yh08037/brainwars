@@ -141,6 +141,8 @@ void *process(void *arg) {
 	int game, score, result;
 	char temp;
 
+	srand(time(NULL));
+
 	while (1) {
 		switch (state)
 		{
@@ -180,7 +182,7 @@ void *process(void *arg) {
 			}
 			printf("\n");
 
-			score = 21;			
+			score = rand()%20;		
 			printf("game score: %d\n", score);
 
 			tx_msg.type = MSG_FINISH;
@@ -201,8 +203,8 @@ void *process(void *arg) {
 
 		case DP_RESULT:
 			switch (result) {
-				case 0: printf("lose\n"); break;
-				case 1: printf("win\n"); break;
+				case 0: printf("win\n"); break;
+				case 1: printf("lose\n"); break;
 				case 2: printf("draw\n"); break;
 				default: printf("???\n");
 			}

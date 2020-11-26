@@ -17,8 +17,8 @@ void print_msg(msg_t *msg) {
 		break;
 	case MSG_RESULT:
 		switch (msg->data) {
-			case 0: printf("MSG_RESULT - lose\n"); break;
-			case 1: printf("MSG_RESULT - win\n"); break;
+			case 0: printf("MSG_RESULT - win\n"); break;
+			case 1: printf("MSG_RESULT - lose\n"); break;
 			case 2: printf("MSG_RESULT - draw\n"); break;
 			default: printf("MSG_RESULT - ?\n");
 		}
