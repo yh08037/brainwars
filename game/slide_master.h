@@ -1,6 +1,9 @@
 // $ gcc -o slide_master slide_master.c -lpthread
 // $ ./slide_master
 
+#ifndef SLIDE_MASTER_H
+#define SLIDE_MASTER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -81,3 +84,5 @@ double wtime();
 
 joystick_t joystick_data;
 bool is_thread_stop;
+
+#endif
