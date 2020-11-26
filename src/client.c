@@ -57,43 +57,20 @@ void run_client(client_cfg_t *client_cfg) {
     res3 = pthread_join(process_thread, &thread_result);
 }
 
-void get_msg_from_tx_buffer(msg_t *tx_msg) {
+void get_msg_from_buffer(queue *buffer, msg_t *msg) {
 
-	msg_t *temp;
+	msg_t *temp = (msg_t*)queue_front(buffer);
 
-	while (1) {
-		if (!queue_empty(&tx_buffer)) {
-			temp = (msg_t*)queue_front(&tx_buffer);
-			*tx_msg = *temp;
-			queue_dequeue(&tx_buffer);
-			break;
-		}
-		sleep(T_BUFFER_CHECK);
-	}
+	*msg = *temp;
+	queue_dequeue(buffer);
 }
 
-void push_msg_to_tx_buffer(msg_t *tx_msg) {
-
-	msg_t *temp = (msg_t*)malloc(sizeof(msg_t));
-	
-	*temp = *tx_msg;
-	queue_enqueue(&tx_buffer, temp);
-}
-
-void get_msg_from_rx_buffer(msg_t *rx_msg) {
-
-	msg_t *temp = (msg_t*)queue_front(&rx_buffer);
-
-	*rx_msg = *temp;
-	queue_dequeue(&rx_buffer);
-}
-
-void push_msg_to_rx_buffer(msg_t *rx_msg) {
+void push_msg_to_buffer(queue *buffer, msg_t *msg) {
 
 	msg_t *temp = (msg_t*)malloc(sizeof(msg_t));
 
-	*temp = *rx_msg;
-	queue_enqueue(&rx_buffer, temp);
+	*temp = *msg;
+	queue_enqueue(buffer, temp);
 }
 
 void *transmit(void *arg) {
@@ -106,7 +83,13 @@ void *transmit(void *arg) {
 	int sockfd = tx_arg->sockfd;
 
 	while (1) {
-		get_msg_from_tx_buffer(&tx_msg);
+		while (1) {
+			if (!queue_empty(&tx_buffer)) {
+				get_msg_from_buffer(&tx_buffer, &tx_msg);
+				break;
+			}
+			sleep(T_BUFFER_CHECK);
+		}
 		write(sockfd, &tx_msg, SIZE_BUFFER);
 	}
 }
@@ -122,7 +105,7 @@ void *receive(void *arg) {
 
 	while (1) {
 		read(sockfd, &rx_msg, SIZE_BUFFER);
-		push_msg_to_rx_buffer(&rx_msg);
+		push_msg_to_buffer(&rx_buffer, &rx_msg);
 	}
 }
 
@@ -134,13 +117,13 @@ void *process(void *arg) {
 	while (1) {
 		// check rx_buffer
 		if (!queue_empty(&rx_buffer)) {
-			get_msg_from_rx_buffer(&rx_msg);
+			get_msg_from_buffer(&rx_buffer, &rx_msg);
 			printf("msg from server : %d %d\n", rx_msg.type, rx_msg.data);
 		}
 		
-		scanf("%d-%d", &temp_type, &(tx_msg.data));
-		tx_msg.type = (msg_type_t)temp_type;
-		push_msg_to_tx_buffer(&tx_msg);
+		// scanf("%d-%d", &temp_type, &(tx_msg.data));
+		// tx_msg.type = (msg_type_t)temp_type;
+		// push_msg_to_buffer(&tx_buffer, &tx_msg);
 		
 		sleep(T_BUFFER_CHECK);
 	}

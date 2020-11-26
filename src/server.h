@@ -51,11 +51,8 @@ typedef struct _rx_arg_t {
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
 
-void get_msg_from_tx_buffer(int *target_fd, msg_t *tx_msg); // blocking
-void push_msg_to_tx_buffer(int target_fd, msg_t *tx_msg);   // non-blocking
-
-void get_msg_from_rx_buffer(int *target_fd, msg_t *rx_msg); // non-blocking
-void push_msg_to_rx_buffer(int target_fd, msg_t *rx_msg);   // non-blocking
+void get_msg_from_buffer(queue* buffer, int *target_fd, msg_t *msg);
+void push_msg_to_buffer(queue* buffer, int target_fd, msg_t *msg);
 
 void *transmit(void *arg);
 void *receive(void *arg);

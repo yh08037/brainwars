@@ -45,11 +45,8 @@ typedef struct _client_arg_t {
 void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
 void run_client(client_cfg_t *client_cfg);
 
-void get_msg_from_tx_buffer(msg_t *tx_msg); // blocking
-void push_msg_to_tx_buffer(msg_t *tx_msg);  // non-blocking
-
-void get_msg_from_rx_buffer(msg_t *rx_msg); // non-blocking
-void push_msg_to_rx_buffer(msg_t *rx_msg);  // non-blocking
+void get_msg_from_buffer(queue *buffer, msg_t *msg);
+void push_msg_to_buffer(queue *buffer, msg_t *msg);
 
 void *transmit(void *arg);
 void *receive(void *arg);
