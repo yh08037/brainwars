@@ -1,6 +1,15 @@
 #include "joystick.h"
 
 
+void open_joystick() {
+    joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
+    is_thread_stop = false;
+    if (joystick_read_thread() != 0){
+        fprintf(stderr, "Failed to Matrix multiplication\n");
+        exit(1);
+    }
+}
+
 int joystick_read_thread(){
     int res;
     pthread_t joystick_thread;
@@ -21,8 +30,8 @@ void *joystick_command(void *arg){
         // delay(DELAY_SYNC);
         sleep(DELAY_SYNC / 1000.0);
 
-        if (is_thread_stop){
-            break;
-        }
+//         if (is_thread_stop){
+//             break;
+//         }
     }
 }

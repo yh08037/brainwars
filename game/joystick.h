@@ -21,6 +21,7 @@ typedef struct {
     struct input_event ev;
 } joystick_t;
 
+void open_joystick();
 int joystick_read_thread();
 void *joystick_command(void *arg);
 

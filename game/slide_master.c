@@ -17,16 +17,18 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 
     slide_master_game_ready(led_matrix->map);
 
-    joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
-    is_thread_stop = false;
-    if (joystick_read_thread() != 0){
-        fprintf(stderr, "Failed to Matrix multiplication\n");
-        exit(1);
-    }
+    // joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
+    // is_thread_stop = false;
+    // if (joystick_read_thread() != 0){
+    //     fprintf(stderr, "Failed to Matrix multiplication\n");
+    //     exit(1);
+    // }
     start_time = wtime();
 
     while(true)
     {
+        // if (joystick_data.ev.type != 0)
+        //     printf("joy: %d %d %d\n", joystick_data.ev.type, joystick_data.ev.value, joystick_data.ev.code);
         check_time = wtime();
         elapsed_time = check_time - start_time;
         

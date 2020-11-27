@@ -29,6 +29,9 @@ void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number) 
 	// initialize led_matrix
     open_led_matrix(&led_matrix);
 
+	// initialize joystick
+	open_joystick();
+
 	// init random seed`
     srand(time(NULL));
 }
