@@ -3,8 +3,6 @@
 
 void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 
-    srand(time(NULL));
-
     result->correct = -1;
     result->wrong = 0;
     double start_time, check_time;
