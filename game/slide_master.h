@@ -4,23 +4,23 @@
 #ifndef SLIDE_MASTER_H
 #define SLIDE_MASTER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <stdint.h>
-#include <linux/fb.h>
-#include <sys/ioctl.h>
-#include <errno.h>
-#include <string.h>
-#include <linux/input.h>
-#include <time.h>
-#include <stdbool.h>
-#include <sys/time.h>
-#include <pthread.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <sys/types.h>
+// #include <sys/stat.h>
+// #include <unistd.h>
+// #include <fcntl.h>
+// #include <sys/mman.h>
+// #include <stdint.h>
+// #include <linux/fb.h>
+// #include <sys/ioctl.h>
+// #include <errno.h>
+// #include <string.h>
+// #include <linux/input.h>
+// #include <time.h>
+// #include <stdbool.h>
+// #include <sys/time.h>
+// #include <pthread.h>
 
 #include "game_basis.h"
 
@@ -55,8 +55,8 @@
 
 typedef struct {
     bool state_isCorrect;
-    int *direction, direction_v;
-    int *color, color_v;
+    int direction;
+    int color;
 } slide_master_t;
 
 // typedef struct {
@@ -71,9 +71,9 @@ typedef struct {
 // } result_t;
 
 void slide_master_game(result_t *result, led_matrix_t *led_matrix); // call this function to start slide_master
-// void disp_score(uint16_t *map, int score);
+// void disp_nums(uint16_t *map, int score);
 // void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
-void slide_master_game_ready(uint16_t *map);
+// void game_ready(uint16_t *map);
 // void number_countdown(uint16_t *map, int number);
 // void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
 // int joystick_read_thread();
@@ -81,7 +81,7 @@ void slide_master_game_ready(uint16_t *map);
 void init_slide_master(slide_master_t *slide_master);
 // void open_led_matrix(led_matrix_t *led_matrix); //led_matrix.h
 // void close_led_matrix(led_matrix_t *led_matrix); //led_matrix.h
-int random_arrow(uint16_t *map, int *direction, int *color);
+void random_arrow(uint16_t *map, int *direction, int *color);
 void arrow(uint16_t *map, int direction, int color_code);
 bool check_slide_master(int answer_direction, int answer_color, int direction);
 // void rotate_ccw90(uint16_t *map, int shape[], int color_code);

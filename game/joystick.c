@@ -3,7 +3,7 @@
 
 void open_joystick() {
     joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
-    is_thread_stop = false;
+    //is_thread_stop = false;
     if (joystick_read_thread() != 0){
         fprintf(stderr, "Failed to Matrix multiplication\n");
         exit(1);

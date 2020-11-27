@@ -8,14 +8,11 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
     double start_time, check_time;
     double elapsed_time;
 
-    slide_master_t *slide_master, slide_master_v;
-    slide_master = &slide_master_v;
+    slide_master_t slide_master;
 
-    slide_master->state_isCorrect = true;
-    slide_master->direction = &slide_master->direction_v;
-    slide_master->color = &slide_master->color_v;
+    slide_master.state_isCorrect = true;
 
-    slide_master_game_ready(led_matrix->map);
+    game_ready(led_matrix->map);
 
     // joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
     // is_thread_stop = false;
@@ -37,28 +34,28 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 
         if (elapsed_time > PLAY_TIME){
             //printf("Game Finished~ Score : %d\n", score);
-            is_thread_stop = true;
+            // is_thread_stop = true;
             break;
         }
         
-        if (slide_master->state_isCorrect == true){
+        if (slide_master.state_isCorrect == true){
             memset(led_matrix->map, 0, FILESIZE);
             delay(100);
-            random_arrow(led_matrix->map, slide_master->direction, slide_master->color);
+            random_arrow(led_matrix->map, &slide_master.direction, &slide_master.color);
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
-            slide_master->state_isCorrect = false;
+            slide_master.state_isCorrect = false;
             result->correct++;
             continue;
         }
 
         if (joystick_data.ev.type != 0 && joystick_data.ev.value == 1){
-            slide_master->state_isCorrect = check_slide_master(*slide_master->direction, *slide_master->color, joystick_data.ev.code);
+            slide_master.state_isCorrect = check_slide_master(slide_master.direction, slide_master.color, joystick_data.ev.code);
 
-            if (slide_master->state_isCorrect == false){
+            if (slide_master.state_isCorrect == false){
                 for (int i = 0; i < 4; i++){
                     memset(led_matrix->map, 0, FILESIZE);
                     delay(100);
-                    arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
+                    arrow(led_matrix->map, slide_master.direction, slide_master.color == 0 ? RGB565_RED : RGB565_BLUE);
                     ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
                     delay(100);
                 
@@ -66,7 +63,7 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
                 result->wrong++;
         }
         else{
-            arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
+            arrow(led_matrix->map, slide_master.direction, slide_master.color == 0 ? RGB565_RED : RGB565_BLUE);
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
         }    
 
@@ -77,11 +74,11 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
     int score = result->correct * CORRECT_POINT + result->wrong * WRONG_POINT;
     if (score < 0) score = 0;
 
-    disp_score(led_matrix->map, score);
+    disp_nums(led_matrix->map, score);
     delay(5000);
 }
 
-// void disp_score(uint16_t *map, int score){
+// void disp_nums(uint16_t *map, int score){
 //     memset(map, 0, FILESIZE);
 
 //     int color_code = RGB565_WHITE;
@@ -213,33 +210,33 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 //     }
 // }
 
-void slide_master_game_ready(uint16_t *map){
-    memset(map, 0, FILESIZE);
-    double start_time, check_time, elapsed_time;
-    start_time = wtime();
+// void game_ready(uint16_t *map){
+//     memset(map, 0, FILESIZE);
+//     double start_time, check_time, elapsed_time;
+//     start_time = wtime();
 
-    while(1){
-        check_time = wtime();
-        elapsed_time = check_time - start_time;
+//     while(1){
+//         check_time = wtime();
+//         elapsed_time = check_time - start_time;
 
-        if (elapsed_time > 3){
-            return;
-        }
-        if (elapsed_time > 2){
-            number_countdown(map, 1);
-            ring(map, 3 - elapsed_time, 1, RGB565_GREEN, false);
-        }
-        else if (elapsed_time > 1){
-            number_countdown(map, 2);
-            ring(map, 2 - elapsed_time, 1, RGB565_GREEN, false);
-        }
-        else{
-            number_countdown(map, 3);
-            ring(map, 1 - elapsed_time, 1, RGB565_GREEN, false);
-        }
-        delay(10);
-    }
-}
+//         if (elapsed_time > 3){
+//             return;
+//         }
+//         if (elapsed_time > 2){
+//             number_countdown(map, 1);
+//             ring(map, 3 - elapsed_time, 1, RGB565_GREEN, false);
+//         }
+//         else if (elapsed_time > 1){
+//             number_countdown(map, 2);
+//             ring(map, 2 - elapsed_time, 1, RGB565_GREEN, false);
+//         }
+//         else{
+//             number_countdown(map, 3);
+//             ring(map, 1 - elapsed_time, 1, RGB565_GREEN, false);
+//         }
+//         delay(10);
+//     }
+// }
 
 // void number_countdown(uint16_t *map, int number){
 //     memset(map, 0, FILESIZE);
@@ -349,7 +346,7 @@ void slide_master_game_ready(uint16_t *map){
 //     }
 // }
 
-int random_arrow(uint16_t *map, int *direction, int *color){ // map - input, direction color - output
+void random_arrow(uint16_t *map, int *direction, int *color){ // map - input, direction color - output
     int direction_random = rand() % 4;
     int color_random = rand() % 2;
 

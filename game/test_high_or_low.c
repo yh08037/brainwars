@@ -1,10 +1,12 @@
-#include "slide_master.h"
+#include "high_or_low.h"
 
 /* execution
- * gcc -o test test_slide_master.c slide_master.c game_basis.c led_matrix.c joystick.c -lpthread
+ * gcc -o test test_high_or_low.c high_or_low.c game_basis.c led_matrix.c joystick.c -lpthread
 */
 
 int main(void){
+    
+    srand(time(NULL));
 
     led_matrix_t *led_matrix, led_matrix_v;
     led_matrix = &led_matrix_v;
@@ -15,7 +17,7 @@ int main(void){
 
     open_joystick();
 
-    slide_master_game(&result, led_matrix); // call this function to start slide master.
+    high_or_low_game(&result, led_matrix); // call this function to start slide master.
 
     close_led_matrix(led_matrix);
     return 0;

@@ -109,7 +109,7 @@ void close_led_matrix(led_matrix_t *led_matrix){
     close(led_matrix->fbfd);
 }
 
-void disp_score(uint16_t *map, int score){
+void disp_nums(uint16_t *map, int score){
     memset(map, 0, FILESIZE);
 
     int color_code = RGB565_WHITE;
