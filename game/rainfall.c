@@ -1,7 +1,7 @@
 #include "rainfall.h"
 
-#define CORRECT_POINT_RAINFALL 2
-#define WRONG_POINT_RAINFALL -3
+#define CORRECT_POINT_RAINFALL 1
+#define WRONG_POINT_RAINFALL -1
 
 void rainfall_game(result_t *result, led_matrix_t *led_matrix)
 { // call this function to start slide_master
@@ -86,22 +86,22 @@ void disp_rainfall(uint16_t *map, rainfall_t rainfall){
 
     int platform[2] = {56, 48};
     int new_platform[2] = { 0, };
-    int color, j;
+    int color_code, j;
 
     for (int i = 0; i < 5; i++){
         j = (i + rainfall.object_index) % 5;
         if (rainfall.object[j][0] == 0){
-            color = RGB565_BLUE;
+            color_code = RGB565_BLUE;
         }
         else {
-            color = RGB565_RED;
+            color_code = RGB565_RED;
         }
         
         for (int k = 0; k < 2; k++){
             new_platform[k] = platform[k] - 8 * (2 + 3 * rainfall.object[j][1]) + (5-i);
             
             //printf("%d %d\n", rainfall.object[j][1], new_platform[k]);
-            *(map+(new_platform[k])) = color;
+            *(map+(new_platform[k])) = color_code;
         }
     }
     if (rainfall.my_pos == 108){
