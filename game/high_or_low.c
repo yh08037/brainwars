@@ -76,7 +76,7 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
     if (score < 0) score = 0;
 
 
-    disp_nums(led_matrix->map, score, RGB565_WEAKWHITE);
+    disp_nums(led_matrix->map, score, RGB565_WHITE);
     delay(5000);
 }
 
