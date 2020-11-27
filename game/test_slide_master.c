@@ -6,6 +6,8 @@
 
 int main(void){
 
+    srand(time(NULL));
+
     led_matrix_t *led_matrix, led_matrix_v;
     led_matrix = &led_matrix_v;
 

@@ -50,13 +50,13 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
                 
                 }
                 result->wrong++;
-        }
-        else{
-            arrow(led_matrix->map, slide_master.direction, slide_master.color == 0 ? RGB565_RED : RGB565_BLUE);
-            ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
-        }    
+            }
+            else{
+                arrow(led_matrix->map, slide_master.direction, slide_master.color == 0 ? RGB565_RED : RGB565_BLUE);
+                ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
+            }    
 
-        delay(DELAY_SYNC);
+            delay(DELAY_SYNC);
         }
     }
 

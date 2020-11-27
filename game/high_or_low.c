@@ -53,13 +53,13 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
                 
                 }
                 result->wrong++;
-        }
-        else{
-            disp_nums(led_matrix->map, high_or_low.now_number, RGB565_WEAKWHITE);
-            ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
-        }    
+            }
+            else{
+                disp_nums(led_matrix->map, high_or_low.now_number, RGB565_WEAKWHITE);
+                ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
+            }    
 
-        delay(DELAY_SYNC);
+            delay(DELAY_SYNC);
         }
     }
 
