@@ -148,7 +148,7 @@ void *process(void *arg) {
 	msg_t rx_msg, tx_msg;
 	client_state_t state = WF_SELECT;
 	int game, score, result;
-	char temp;
+	// char temp;
 
 	while (1) {
 		switch (state)
@@ -165,7 +165,8 @@ void *process(void *arg) {
 
 		case IP_READY:
 			printf("waiting for ready input...\n");
-			scanf("%c", &temp);
+			
+			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 
 			tx_msg.type = MSG_READY;
 			tx_msg.data = 0;
@@ -211,8 +212,8 @@ void *process(void *arg) {
 				case 2: printf("draw\n"); break;
 				default: printf("???\n");
 			}
-			printf("press any key to restart");
-			scanf("%c", &temp);
+			printf("press any key to restart\n");
+			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 			state = WF_SELECT;
 
 		default:
