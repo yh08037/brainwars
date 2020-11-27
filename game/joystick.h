@@ -26,6 +26,5 @@ int joystick_read_thread();
 void *joystick_command(void *arg);
 
 joystick_t joystick_data;
-//bool is_thread_stop;
 
 #endif

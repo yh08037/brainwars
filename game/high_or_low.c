@@ -17,12 +17,6 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
     game_ready(led_matrix->map);
     show_0(led_matrix->map);
 
-    // joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
-    // is_thread_stop = false;
-    // if (joystick_read_thread() != 0){
-    //     fprintf(stderr, "Failed to Matrix multiplication\n");
-    //     exit(1);
-    // }
     start_time = wtime();
 
     while(true)
@@ -30,12 +24,9 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
         check_time = wtime();
         elapsed_time = check_time - start_time;
         
-        //arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
         ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
 
         if (elapsed_time > PLAY_TIME){
-            //printf("Game Finished~ Score : %d\n", score);
-            //is_thread_stop = true;
             break;
         }
         

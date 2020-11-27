@@ -27,11 +27,8 @@ void *joystick_command(void *arg){
     while (1){
         read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 
-        // delay(DELAY_SYNC);
         sleep(DELAY_SYNC / 1000.0);
 
-//         if (is_thread_stop){
-//             break;
-//         }
+
     }
 }
