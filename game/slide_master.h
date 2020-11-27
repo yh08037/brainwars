@@ -22,8 +22,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 
-#include "led_matrix.h"
-#include "joystick.h"
+#include "game_basis.h"
 
 // #define LEDMATRIX_PATH "/dev/fb0"
 // #define JOYSTICK_PATH "/dev/input/event0"
@@ -60,23 +59,23 @@ typedef struct {
     int *color, color_v;
 } slide_master_t;
 
-typedef struct {
-    unsigned int B : 5;
-    unsigned int G : 6;
-    unsigned int R : 5;
-} RGB565_t;
+// typedef struct {
+//     unsigned int B : 5;
+//     unsigned int G : 6;
+//     unsigned int R : 5;
+// } RGB565_t;
 
-typedef struct _result_t {
-    int correct;
-    int wrong;
-} result_t;
+// typedef struct _result_t {
+//     int correct;
+//     int wrong;
+// } result_t;
 
 void slide_master_game(result_t *result, led_matrix_t *led_matrix); // call this function to start slide_master
-void disp_score(uint16_t *map, int score);
-void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
+// void disp_score(uint16_t *map, int score);
+// void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
 void slide_master_game_ready(uint16_t *map);
-void number_countdown(uint16_t *map, int number);
-void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
+// void number_countdown(uint16_t *map, int number);
+// void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
 // int joystick_read_thread();
 // void *joystick_command(void *arg);
 void init_slide_master(slide_master_t *slide_master);
@@ -84,10 +83,10 @@ void init_slide_master(slide_master_t *slide_master);
 // void close_led_matrix(led_matrix_t *led_matrix); //led_matrix.h
 int random_arrow(uint16_t *map, int *direction, int *color);
 void arrow(uint16_t *map, int direction, int color_code);
-bool check(int answer_direction, int answer_color, int direction);
-void rotate_cww90(uint16_t *map, int shape[], int color_code);
+bool check_slide_master(int answer_direction, int answer_color, int direction);
+// void rotate_ccw90(uint16_t *map, int shape[], int color_code);
 // void delay(int t);
-double wtime();
+// double wtime();
 
 // joystick_t joystick_data;
 // bool is_thread_stop;

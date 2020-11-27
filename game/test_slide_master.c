@@ -1,7 +1,7 @@
 #include "slide_master.h"
 
 /* execution
- * gcc -o test test_slide_master.c slide_master.c led_matrix.c joystick.c -lpthread
+ * gcc -o test test_slide_master.c slide_master.c game_basis.c led_matrix.c joystick.c -lpthread
 */
 
 int main(void){

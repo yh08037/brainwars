@@ -24,10 +24,12 @@
 #include <string.h>
 #include <linux/fb.h>
 #include <sys/ioctl.h>
+#include <stdbool.h>
 
 #define LEDMATRIX_PATH "/dev/fb0"
 #define NUM_WORDS 64
 #define FILESIZE (NUM_WORDS * sizeof(uint16_t))
+
 
 #define RGB565_RED 0xF800
 #define RGB565_GREEN 0x07E0
@@ -43,9 +45,22 @@ typedef struct {
     struct fb_fix_screeninfo fix_info;
 } led_matrix_t;
 
+typedef struct {
+    unsigned int B : 5;
+    unsigned int G : 6;
+    unsigned int R : 5;
+} RGB565_t;
+
 
 void open_led_matrix(led_matrix_t *led_matrix);
 void close_led_matrix(led_matrix_t *led_matrix);
-void delay(int);
+void disp_score(uint16_t *map, int score);
+void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
+void number_countdown(uint16_t *map, int number);
+void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
+void rotate_ccw90(uint16_t *map, int shape[], int color_code);
+
+
+// void delay(int);
 
 #endif // LED_MATRIX_H
