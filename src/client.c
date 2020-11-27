@@ -184,7 +184,18 @@ void *process(void *arg) {
 			break;
 
 		case IN_GAME:
-    		slide_master_game(&game_result, &led_matrix);
+			switch(game){
+			case 0:
+		    	slide_master_game(&game_result, &led_matrix);	
+				break;
+			case 1:
+				high_or_low_game(&game_result, &led_matrix);
+				break;
+			default:
+				printf("???\n");
+				break;
+			}
+
 
 			score = 3 * game_result.correct - 2 * game_result.wrong;
 			printf("game score: %d\n", score);
