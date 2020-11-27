@@ -191,6 +191,9 @@ void *process(void *arg) {
 			case 1:
 				high_or_low_game(&game_result, &led_matrix);
 				break;
+			case 2:
+				rainfall_game(&game_result, &led_matrix);
+				break;
 			default:
 				printf("???\n");
 				break;

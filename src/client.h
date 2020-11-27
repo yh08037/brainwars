@@ -16,6 +16,7 @@
 
 #include "slide_master.h"
 #include "high_or_low.h"
+#include "rainfall.h"
 
 
 #define SIZE_BUFFER		sizeof(msg_t)
