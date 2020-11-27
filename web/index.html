@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Main page </title>
+		<meta charset="UTF-8">
+	</head>
+
+	<body>
+    <h1>Select game</h1>
+      <input type="button" name="btn_game0" value="Slide master" onclick=page_href(0)>
+      <input type="button" name="btn_game1" value="High or low", onclick=page_href(1)>
+      <input type="button" name="btn_game2" value="Rainfall",  onclick=page_href(2)>
+      <input type="button" name="btn_game3" value="Color switch" onclick=page_href(3)>
+	</body>
+</html>
+<script>
+  function page_href(game_num) {
+    switch (game_num) {
+      case 0:
+        location.href = "slide_master/ready.html";
+        break;
+      case 1:
+        location.href = "high_or_low/ready.html";
+        break;
+      case 2:
+        location.href = "rainfall/ready.html";
+        break;
+      case 3:
+        location.href = "color_switch/ready.html";
+        break;
+      default:
+        alret("Unknown href\n");
+    }
+  }
+</script>

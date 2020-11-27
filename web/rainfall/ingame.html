@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Rainfall </title>
+		<meta charset="UTF-8">
+	</head>
+
+	<body>
+		<h1>Rainfall</h1>
+		<h2>now in game...</h2>
+		<input type="button" name="finished" value="game finished" onclick=page_href(0)>
+		<input type="button" name="go_main" value="main" onclick=page_href(1)>
+	</body>
+</html>
+<script>
+  function page_href(game_num) {
+    switch (game_num) {
+      case 0:
+        location.href = "result.html";
+        break;
+      case 1:
+        location.href = "../";
+        break;
+      default:
+        alret("Unknown href\n");
+    }
+  }
+</script>
