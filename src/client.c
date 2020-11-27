@@ -25,6 +25,9 @@ void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number) 
 	// initialize tx_buffer / rx_buffer 
 	queue_init(&tx_buffer);
 	queue_init(&rx_buffer);	
+
+	// initialize led_matrix
+    open_led_matrix(&led_matrix);
 }
 
 void run_client(client_cfg_t *client_cfg) {
@@ -141,8 +144,6 @@ void *process(void *arg) {
 	int game, score, result;
 	char temp;
 
-	srand(time(NULL));
-
 	while (1) {
 		switch (state)
 		{
@@ -176,13 +177,9 @@ void *process(void *arg) {
 			break;
 
 		case IN_GAME:
-			for (int i = T_GAME; i > 0; i--) {
-				printf("%d\n", i);
-				sleep(1);
-			}
-			printf("\n");
+    		slide_master_game(&game_result, &led_matrix);
 
-			score = rand()%20;		
+			score = 3 * game_result.correct - 2 * game_result.wrong;
 			printf("game score: %d\n", score);
 
 			tx_msg.type = MSG_FINISH;
