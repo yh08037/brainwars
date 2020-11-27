@@ -1,15 +1,3 @@
-/*
- *  C code to demonstrate control of the LED matrix for the
- *  Raspberry Pi Sense HAT add-on board.
- *
- *  Uses the mmap method to map the led device into memory
- *
- *  Build with:  gcc -Wall -O2 led_matrix.c -o led_matrix
- *
- *  Tested with:  Raspbian GNU/Linux 10 (buster) / Raspberry Pi 3 B+
- *
- */
-
 #ifndef LED_MATRIX_H
 #define LED_MATRIX_H
 

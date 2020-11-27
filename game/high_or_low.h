@@ -11,7 +11,6 @@ typedef struct {
 
 
 void high_or_low_game(result_t *result, led_matrix_t *led_matrix); // call this function to start slide_master
-void init_high_or_low(high_or_low_t *high_or_low);
 void random_number(uint16_t *map, high_or_low_t *high_or_low);
 bool check_high_or_low();
 void show_0(uint16_t *map);
