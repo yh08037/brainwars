@@ -26,8 +26,8 @@
 
 // #define LEDMATRIX_PATH "/dev/fb0"
 // #define JOYSTICK_PATH "/dev/input/event0"
-#define NUM_WORDS 64
-#define FILESIZE (NUM_WORDS * sizeof(uint16_t))
+// #define NUM_WORDS 64
+// #define FILESIZE (NUM_WORDS * sizeof(uint16_t))
 
 // #define RGB565_RED 0xF800
 // #define RGB565_GREEN 0x07E0
@@ -37,10 +37,10 @@
 // #define RGB565_WHITE 0xFFFF
 // #define RGB565_OFF 0x0000
 
-#define PLAY_TIME 20 //sec
+// #define PLAY_TIME 20 //sec
 
-#define CORRECT_POINT 3
-#define WRONG_POINT -2
+// #define CORRECT_POINT 3
+// #define WRONG_POINT -2
 
 // typedef struct {
 //     int fbfd;
