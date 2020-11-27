@@ -1,21 +1,5 @@
 #include "slide_master.h"
 
-int main(void){
-
-    led_matrix_t *led_matrix, led_matrix_v;
-    led_matrix = &led_matrix_v;
-
-    open_led_matrix(led_matrix);
-
-    result_t *result;
-    result_t result_v;
-    result = &result_v;
-
-    slide_master_game(result, led_matrix); // call this function to start slide master.
-
-    close_led_matrix(led_matrix);
-    return 0;
-}
 
 void slide_master_game(result_t *result, led_matrix_t *led_matrix){
 
@@ -79,7 +63,7 @@ void slide_master_game(result_t *result, led_matrix_t *led_matrix){
                     delay(100);
                 
                 }
-                result->wrong;
+                result->wrong++;
         }
         else{
             arrow(led_matrix->map, *slide_master->direction, *slide_master->color == 0 ? RGB565_RED : RGB565_BLUE);
@@ -340,68 +324,30 @@ void ring(uint16_t *map, double left_time, double max_time, int color_code, bool
 
 }
 
-int joystick_read_thread(){
-    int res;
-    pthread_t joystick_thread;
+// int joystick_read_thread(){
+//     int res;
+//     pthread_t joystick_thread;
 
-    res = pthread_create(&joystick_thread, NULL, joystick_command, NULL);
-    if (res != 0){
-        perror("Thread creation failed");
-        exit(EXIT_FAILURE);
-    }
+//     res = pthread_create(&joystick_thread, NULL, joystick_command, NULL);
+//     if (res != 0){
+//         perror("Thread creation failed");
+//         exit(EXIT_FAILURE);
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
-void *joystick_command(void *arg){
-    while (1){
-        read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
+// void *joystick_command(void *arg){
+//     while (1){
+//         read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 
-        delay(DELAY_SYNC);
+//         delay(DELAY_SYNC);
 
-        if (is_thread_stop){
-            break;
-        }
-    }
-}
-
-void open_led_matrix(led_matrix_t *led_matrix){
-    
-    led_matrix->fbfd = open(LEDMATRIX_PATH, O_RDWR);
-    if (led_matrix->fbfd == -1){
-        perror("Error (call to 'open')");
-        exit(EXIT_FAILURE);
-    }
-
-    if (ioctl(led_matrix->fbfd, FBIOGET_FSCREENINFO, &led_matrix->fix_info) == -1){
-        perror("Error (call to 'ioctl')");
-        close(led_matrix->fbfd);
-        exit(EXIT_FAILURE);
-    }
-
-    if (strcmp(led_matrix->fix_info.id, "RPi-Sense FB") != 0){
-        printf("%s\n", "Error: RPi-Sense FB not fount");
-        close(led_matrix->fbfd);
-        exit(EXIT_FAILURE);
-    }
-
-    led_matrix->map = mmap(NULL, FILESIZE, PROT_READ | PROT_WRITE, MAP_SHARED, led_matrix->fbfd, 0);
-    if (led_matrix->map == MAP_FAILED){
-        close(led_matrix->fbfd);
-        perror("Error mmapping the file");
-        exit(EXIT_FAILURE);
-    }
-    memset(led_matrix->map, 0, FILESIZE);
-}
-
-void close_led_matrix(led_matrix_t *led_matrix){
-    memset(led_matrix->map, 0, FILESIZE);
-
-    if (munmap(led_matrix->map, FILESIZE) == -1){
-        perror("Error un-mmapping the file");
-    }
-    close(led_matrix->fbfd);
-}
+//         if (is_thread_stop){
+//             break;
+//         }
+//     }
+// }
 
 int random_arrow(uint16_t *map, int *direction, int *color){ // map - input, direction color - output
     int direction_random = rand() % 4;
@@ -488,9 +434,9 @@ void rotate_cww90(uint16_t *map, int shape[], int color_code){
 
 }
 
-void delay(int t){
-    usleep(t*1000);
-}
+// void delay(int t){
+//     usleep(t*1000);
+// }
 
 double wtime()
 {
