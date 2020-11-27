@@ -50,7 +50,6 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
         }
 
         if (joystick_data.ev.type != 0 && joystick_data.ev.value == 1){
-            printf("hello~\n");
             high_or_low.state_isCorrect = check_high_or_low(high_or_low, joystick_data.ev.code);
 
             if (high_or_low.state_isCorrect == false){
