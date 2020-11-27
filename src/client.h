@@ -13,7 +13,9 @@
 
 #include "queue.h"
 #include "message.h"
+
 #include "slide_master.h"
+#include "high_or_low.h"
 
 
 #define SIZE_BUFFER		sizeof(msg_t)

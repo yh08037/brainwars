@@ -1,3 +1,6 @@
+#ifndef GAME_BASIS_H
+#define GAME_BASIS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -32,3 +35,5 @@ typedef struct _result_t {
 void delay(int);
 double wtime();
 void game_ready(uint16_t *map);
+
+#endif
