@@ -56,7 +56,7 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
                 for (int i = 0; i < 4; i++){
                     memset(led_matrix->map, 0, FILESIZE);
                     delay(100);
-                    disp_nums(led_matrix->map, high_or_low.now_number);
+                    disp_nums(led_matrix->map, high_or_low.now_number, RGB565_WEAKWHITE);
                     ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
                     delay(100);
                 
@@ -64,7 +64,7 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
                 result->wrong++;
         }
         else{
-            disp_nums(led_matrix->map, high_or_low.now_number);
+            disp_nums(led_matrix->map, high_or_low.now_number, RGB565_WEAKWHITE);
             ring(led_matrix->map, PLAY_TIME - elapsed_time, PLAY_TIME, RGB565_WEAKGREEN, false);
         }    
 
@@ -76,7 +76,7 @@ void high_or_low_game(result_t *result, led_matrix_t *led_matrix){
     if (score < 0) score = 0;
 
 
-    disp_nums(led_matrix->map, score);
+    disp_nums(led_matrix->map, score, RGB565_WEAKWHITE);
     delay(5000);
 }
 
@@ -87,7 +87,7 @@ void random_number(uint16_t *map, high_or_low_t *high_or_low){
         high_or_low->now_number = rand() % 100;
     } while(high_or_low->before_number == high_or_low->now_number);
 
-    disp_nums(map, high_or_low->now_number);
+    disp_nums(map, high_or_low->now_number, RGB565_WEAKWHITE);
 }
 
 bool check_high_or_low(high_or_low_t high_or_low, int direction){
@@ -100,7 +100,7 @@ bool check_high_or_low(high_or_low_t high_or_low, int direction){
 
 void show_0(uint16_t *map){
     memset(map, 0, FILESIZE);
-    disp_num(map, 0, 5, 2, RGB565_WHITE);
+    disp_num(map, 0, 5, 2, RGB565_WEAKWHITE);
     delay(1000);
 
 }

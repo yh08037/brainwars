@@ -54,7 +54,7 @@ typedef struct {
 
 void open_led_matrix(led_matrix_t *led_matrix);
 void close_led_matrix(led_matrix_t *led_matrix);
-void disp_nums(uint16_t *map, int score);
+void disp_nums(uint16_t *map, int score, int color_code);
 void disp_num(uint16_t *map, int degit, int x_pos, int y_pos, int color_code);
 void number_countdown(uint16_t *map, int number);
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);

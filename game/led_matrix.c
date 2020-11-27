@@ -109,10 +109,10 @@ void close_led_matrix(led_matrix_t *led_matrix){
     close(led_matrix->fbfd);
 }
 
-void disp_nums(uint16_t *map, int score){
+void disp_nums(uint16_t *map, int score, int color_code_){
     memset(map, 0, FILESIZE);
 
-    int color_code = RGB565_WHITE;
+    int color_code = color_code_;
 
     if (score >= 100){
         printf("MAX score! score: %d\n", score);
