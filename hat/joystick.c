@@ -1,41 +1,34 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <stdint.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <linux/input.h>
- 
-int main(int argc, char** argv) {
-    int fd;
- 
-    fd = open(argv[1], O_RDONLY);
- 
-    while(1)
-    {
-        struct input_event ev;
+#include "joystick.h"
 
-        //printf("hello\n");
- 
-        if(read(fd, &ev, sizeof(struct input_event)) < 0)
-        {
-            if(errno == EINTR)
-                continue;
- 
-            break;
-        }
- 
-        if(EV_KEY != ev.type)
-            continue;
- 
 
-        printf("%d, %d\n", ev.code, ev.value);
+void open_joystick() {
+    joystick_data.fd = open(JOYSTICK_PATH, O_RDONLY);
+    //is_thread_stop = false;
+    if (joystick_read_thread() != 0){
+        fprintf(stderr, "Failed to Matrix multiplication\n");
+        exit(1);
     }
- 
-    close(fd);
- 
+}
+
+int joystick_read_thread(){
+    int res;
+    pthread_t joystick_thread;
+
+    res = pthread_create(&joystick_thread, NULL, joystick_command, NULL);
+    if (res != 0){
+        perror("Thread creation failed");
+        exit(EXIT_FAILURE);
+    }
+
     return 0;
+}
+
+void *joystick_command(void *arg){
+    while (1){
+        read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
+
+        sleep(DELAY_SYNC / 1000.0);
+
+
+    }
 }

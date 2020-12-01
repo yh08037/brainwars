@@ -14,6 +14,10 @@
 #include "queue.h"
 #include "message.h"
 
+#include "slide_master.h"
+#include "high_or_low.h"
+#include "rainfall.h"
+
 
 #define SIZE_BUFFER		sizeof(msg_t)
 #define T_BUFFER_CHECK	0.1
@@ -42,13 +46,15 @@ typedef enum _txrx_t{
 	RX,
 } txrx_t;
 
-queue tx_buffer, rx_buffer;
+queue 			tx_buffer, rx_buffer;
+led_matrix_t 	led_matrix;
+result_t 		game_result;
 
 void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number);
 void run_client(client_cfg_t *client_cfg);
 
 void get_msg_from_buffer(txrx_t txrx, msg_t *msg);	// blocking
-void push_msg_to_buffer(txrx_t txrx, msg_t *msg);		// non-blocking
+void push_msg_to_buffer(txrx_t txrx, msg_t *msg);	// non-blocking
 
 void *transmit(void *arg);
 void *receive(void *arg);

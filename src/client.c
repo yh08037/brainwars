@@ -25,6 +25,15 @@ void init_client(client_cfg_t *client_cfg, char *ipv4_address, int port_number) 
 	// initialize tx_buffer / rx_buffer 
 	queue_init(&tx_buffer);
 	queue_init(&rx_buffer);	
+
+	// initialize led_matrix
+    open_led_matrix(&led_matrix);
+
+	// initialize joystick
+	open_joystick();
+
+	// init random seed`
+    srand(time(NULL));
 }
 
 void run_client(client_cfg_t *client_cfg) {
@@ -139,9 +148,7 @@ void *process(void *arg) {
 	msg_t rx_msg, tx_msg;
 	client_state_t state = WF_SELECT;
 	int game, score, result;
-	char temp;
-
-	srand(time(NULL));
+	// char temp;
 
 	while (1) {
 		switch (state)
@@ -158,7 +165,8 @@ void *process(void *arg) {
 
 		case IP_READY:
 			printf("waiting for ready input...\n");
-			scanf("%c", &temp);
+			
+			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 
 			tx_msg.type = MSG_READY;
 			tx_msg.data = 0;
@@ -176,13 +184,23 @@ void *process(void *arg) {
 			break;
 
 		case IN_GAME:
-			for (int i = T_GAME; i > 0; i--) {
-				printf("%d\n", i);
-				sleep(1);
+			switch(game){
+			case 0:
+		    	slide_master_game(&game_result, &led_matrix);	
+				break;
+			case 1:
+				high_or_low_game(&game_result, &led_matrix);
+				break;
+			case 2:
+				rainfall_game(&game_result, &led_matrix);
+				break;
+			default:
+				printf("???\n");
+				break;
 			}
-			printf("\n");
 
-			score = rand()%20;		
+
+			score = 3 * game_result.correct - 2 * game_result.wrong;
 			printf("game score: %d\n", score);
 
 			tx_msg.type = MSG_FINISH;
@@ -208,8 +226,8 @@ void *process(void *arg) {
 				case 2: printf("draw\n"); break;
 				default: printf("???\n");
 			}
-			printf("press any key to restart");
-			scanf("%c", &temp);
+			printf("press any key to restart\n");
+			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
 			state = WF_SELECT;
 
 		default:
