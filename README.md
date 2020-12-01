@@ -110,10 +110,88 @@ brainwars 게임 구동에 필요한 정보를 고려하여 메시지 구조체 
 
 슬라이드 마스터 버그 수정 및 완성도 개선
 
-client.h와 붙일 준비 완료
+#### client.h와 붙일 준비 완료
+``` c
+typedef struct _result_t {
+    int correct;
+    int wrong;
+} result_t;
+
+void slide_master_game(result_t *result, led_matrix_t *led_matrix); 
+```
+
+
+#### client/server - process 쓰레드의 상태 천이 절차 로직 구현
+``` c
+/* in client.h */
+typedef enum _client_state_t {
+	WF_SELECT = 0,
+	IP_READY,
+	WF_START,
+	IN_GAME,
+	WF_RESULT,
+	DP_RESULT
+} client_state_t;
+
+/* in server.h */
+typedef enum _server_state_t {
+    WF_USER = 0,
+    IP_SELECT,
+	WF_READY,
+	IN_GAME,
+	DP_RESULT,
+} server_state_t;
+```
+
+
 
 ### 2020.11.27
 
 슬라이드 마스터 버그 수정
 
 #### 두 번째 게임 high or low 구현
+
+#### 세 번째 게임 rainfall 구현
+
+#### client - 모든 동작을 조이스틱으로 제어
+client 프로그램에서 더 이상 표준 입력을 제어 입력으로 사용하지 않습니다.
+
+모든 동작을 sense-hat의 조이스틱 입력으로 처리하도록 변경되었습니다.
+
+#### client - process 쓰레드의 로직에 실제 게임 실행 추가
+이제 client 프로그램에서 프로그램의 흐름에 따라 게임이 실행됩니다.
+```c
+void *process(void *arg) {
+    ...
+    while (1) {
+        switch (state) 
+        {
+            ...
+        case IN_GAME:
+            switch(game){
+			case 0:
+		    	slide_master_game(&game_result, &led_matrix);
+				break;
+			case 1:
+				high_or_low_game(&game_result, &led_matrix);
+				break;
+			case 2:
+				rainfall_game(&game_result, &led_matrix);
+				break;
+			default:
+				printf("???\n");
+            }
+            ...
+        }
+        ...
+    }
+    ...
+}
+```
+
+#### web - 기본적인 html 작성 및 http server 구현
+title, button 등 기본적인 html 문법을 통해 프로그램 동작 절차 진행을 테스트하였습니다.
+
+http 서버는 [laobubu - Pico HTTP Server in C](https://gist.github.com/laobubu/d6d0e9beb934b60b2e552c2d03e1409e) 를 기반으로 GET에 해당하는 응답을 구현하였습니다.
+
+![web-test](images/web-test.png)
