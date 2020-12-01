@@ -169,17 +169,17 @@ void *process(void *arg) {
             ...
         case IN_GAME:
             switch(game){
-			case 0:
-		    	slide_master_game(&game_result, &led_matrix);
-				break;
-			case 1:
-				high_or_low_game(&game_result, &led_matrix);
-				break;
-			case 2:
-				rainfall_game(&game_result, &led_matrix);
-				break;
-			default:
-				printf("???\n");
+	    case 0:
+	        slide_master_game(&game_result, &led_matrix);
+		break;
+            case 1:
+	        high_or_low_game(&game_result, &led_matrix);
+		break;
+            case 2:
+                rainfall_game(&game_result, &led_matrix);
+                break;
+            default:
+	        printf("???\n");
             }
             ...
         }
