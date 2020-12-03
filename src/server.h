@@ -15,6 +15,7 @@
 
 #include "queue.h"
 #include "message.h"
+#include "httpd.h"
 
 #define SIZE_BUFFER		sizeof(msg_t)
 #define T_BUFFER_CHECK	0.1
