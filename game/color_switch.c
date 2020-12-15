@@ -17,7 +17,7 @@ void color_switch_game(result_t *result, led_matrix_t *led_matrix) // call this 
     memset(led_matrix->map, 0, FILESIZE);
 
     for (int i = 0; i < 3; i++){
-        color_switch.cool_time[i] = wtime();
+        color_switch.cool_time[i] = wtime() - (rand() % 15) * 0.1;
     }
 
     start_time = wtime();
