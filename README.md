@@ -153,7 +153,7 @@ brainwars 게임 구동에 필요한 정보를 고려하여 메시지 구조체 
 
 ### 2020.11.26
 
-슬라이드 마스터 버그 수정 및 완성도 개선
+슬라이드 마스터 버그 수정 및 완성도 향상
 
 #### client.h와 붙일 준비 완료
 ``` c
@@ -189,14 +189,17 @@ typedef enum _server_state_t {
 ```
 
 
-
 ### 2020.11.27
 
 슬라이드 마스터 버그 수정
 
 #### 두 번째 게임 high or low 구현
 
+![high_or_low](images/high_or_low.gif)
+
 #### 세 번째 게임 rainfall 구현
+
+![rainfall](images/rainfall.gif)
 
 #### client - 모든 동작을 조이스틱으로 제어
 client 프로그램에서 더 이상 표준 입력을 제어 입력으로 사용하지 않습니다.
