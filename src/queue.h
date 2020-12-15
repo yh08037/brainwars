@@ -12,8 +12,8 @@ typedef struct _node {
 } node;
 
 typedef struct _queue {
-    node* front;
-    node* rear;
+    node *front;
+    node *rear;
     int sz;
 } queue;
 
@@ -23,5 +23,7 @@ bool queue_empty(queue *q);
 void queue_enqueue(queue *q, void *val);
 void queue_dequeue(queue *q);
 void *queue_front(queue *q);
+void queue_delete(queue *q, void *val, int (*cmp)(void *a, void *b));
+void *queue_search(queue *q, void *val, int (*cmp)(void *a, void *b));
 
 #endif // QUEUE_H

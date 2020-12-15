@@ -16,13 +16,10 @@ void print_msg(msg_t *msg) {
 		printf("MSG_FINISH - score: %d\n", msg->data);
 		break;
 	case MSG_RESULT:
-		// switch (msg->data) {
-		// 	case 0: printf("MSG_RESULT - win\n"); break;
-		// 	case 1: printf("MSG_RESULT - lose\n"); break;
-		// 	case 2: printf("MSG_RESULT - draw\n"); break;
-		// 	default: printf("MSG_RESULT - ?\n");
-		// }
-		printf("MSG_RESULT - %d\n", msg->data);
+		if (msg->data < 0)
+			printf("MSG_RESULT - joint %d\n", msg->data * (-1));
+		else
+			printf("MSG_RESULT - %d\n", msg->data);
 		break;
 	default:
 		printf("Unknown msg type\n");

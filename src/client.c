@@ -221,9 +221,9 @@ void *process(void *arg) {
 
 		case DP_RESULT:
 			switch (result) {
-				case 0: printf("win\n"); break;
-				case 1: printf("lose\n"); break;
-				case 2: printf("draw\n"); break;
+				case -1: printf("draw\n"); break;
+				case 1: printf("win\n"); break;
+				case 2: printf("lose\n"); break;
 				default: printf("???\n");
 			}
 			printf("press any key to restart\n");

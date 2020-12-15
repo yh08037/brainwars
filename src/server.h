@@ -19,6 +19,7 @@
 
 #define SIZE_BUFFER		sizeof(msg_t)
 #define T_BUFFER_CHECK	0.1
+#define NUM_PLAYER		2
 
 
 typedef struct _labeled_msg_t {
@@ -47,9 +48,16 @@ typedef enum _txrx_t{
 	RX,
 } txrx_t;
 
+typedef struct _player_info_t {
+	int fd;
+	int score;
+	int result;
+} player_info_t;
+
 fd_set readfds;
-queue tx_buffer, rx_buffer;
+queue tx_buffer, rx_buffer, serving_fd;
 int num_client;
+int tx_semaphore;
 
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
@@ -60,5 +68,15 @@ void push_msg_to_buffer(txrx_t txrx, int target_fd, msg_t *msg);
 void *transmit(void *arg);
 void *receive(void *arg);
 void *process(void *arg);
+
+void broadcast(msg_t *tx_msg);
+void create_player(int client_sockfd);
+void delete_player(int client_sockfd);
+player_info_t *search_player(int client_sockfd);
+int cmp_player(void *a, void *b);
+void eval_player();
+void send_result_to_all_player();
+void init_player();
+void print_player();
 
 #endif // SERVER_H

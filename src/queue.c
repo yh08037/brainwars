@@ -41,3 +41,33 @@ void *queue_front(queue *q) {
     assert(!queue_empty(q));
     return q->front->data;
 }
+
+void queue_delete(queue *q, void *val, int (*cmp)(void *a, void *b)) {
+    node *curr = q->front;
+    node *prev = NULL;
+
+    while (cmp(curr->data, val) != 0) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    if (prev == NULL) // target node is front -> just dequeue
+        queue_dequeue(q);
+    else {
+        if (curr->next == NULL) // target node is rear
+            q->rear = prev;
+        prev->next = curr->next;
+        free(curr->data);
+        free(curr);
+        q->sz--;
+    }
+}
+
+void *queue_search(queue *q, void *val, int (*cmp)(void *a, void *b)) {
+    node *curr = q->front;
+
+    while (cmp(curr->data, val) != 0) 
+        curr = curr->next;
+
+    return curr->data;
+}
