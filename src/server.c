@@ -28,8 +28,8 @@ void run_server(server_cfg_t *server_cfg) {
 	
 	// vars for threads
 	rx_arg_t	rx_arg;
-    int 		res1, res2, res3;
-    pthread_t	tx_thread, rx_thread, process_thread;
+    int 		res1, res2, res3, res4;
+    pthread_t	tx_thread, rx_thread, process_thread, web_thread;
     void 		*thread_result;
 	
 	// initialize args for tx/rx threads
@@ -39,8 +39,9 @@ void run_server(server_cfg_t *server_cfg) {
 	res1 = pthread_create(&tx_thread, NULL, transmit, NULL);
 	res2 = pthread_create(&rx_thread, NULL, receive, (void*)&rx_arg);
 	res3 = pthread_create(&process_thread, NULL, process, NULL);
+	res4 = pthread_create(&web_thread, NULL, serve_forever, (void*)"12913");
 
-	if (res1 != 0 || res2 != 0 || res3 != 0 ) {
+	if (res1 != 0 || res2 != 0 || res3 != 0 || res4 != 0 ) {
 		perror("Thread creation failed");
 		exit(EXIT_FAILURE);
 	}
@@ -48,6 +49,7 @@ void run_server(server_cfg_t *server_cfg) {
 	res1 = pthread_join(tx_thread, &thread_result);
     res2 = pthread_join(rx_thread, &thread_result);
     res3 = pthread_join(process_thread, &thread_result);
+    res4 = pthread_join(web_thread, &thread_result);
 }
 
 void get_msg_from_buffer(txrx_t txrx, int *target_fd, msg_t *msg) {
