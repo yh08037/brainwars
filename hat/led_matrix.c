@@ -298,10 +298,10 @@ void display_ready(uint16_t *map){
 void display_face(uint16_t *map, int status){ // status == 0 : win, status == 1 : lose, status == 2 : draw
     memset(map, 0, FILESIZE);
     if (status == 0) {  // win
-        int list[26] = {32, 41, 50, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 44, 37, 29, 20};
+        int list[26] = {32, 40, 49, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 44, 37, 29, 20};
         for (int i = 0; i < 20; i++){
             *(map+list[i]) = RGB565_BLUE;
-            usleep(0.1 * 1000000);
+            usleep(0.05 * 1000000);
         }
         usleep(0.1 * 1000000);
 
@@ -318,10 +318,10 @@ void display_face(uint16_t *map, int status){ // status == 0 : win, status == 1 
         usleep(0.1 * 1000000);
     }
     else if (status == 1) {  // lose
-        int list[26] = {32, 41, 50, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 45, 36, 28, 21};
+        int list[26] = {32, 40, 49, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 45, 36, 28, 21};
         for (int i = 0; i < 20; i++){
             *(map+list[i]) = RGB565_RED;
-            usleep(0.1 * 1000000);
+            usleep(0.05 * 1000000);
         }
         usleep(0.1 * 1000000);
 
@@ -337,11 +337,11 @@ void display_face(uint16_t *map, int status){ // status == 0 : win, status == 1 
         }
         usleep(0.1 * 1000000);
     }
-    else  // draw
-        int list[26] = {32, 41, 50, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 45, 37, 29, 21};
+    else{  // draw
+        int list[26] = {32, 40, 49, 58, 59, 60, 61, 54, 47, 39, 31, 23, 14, 5, 4, 3, 2, 9, 16, 24, 42, 18, 45, 37, 29, 21};
         for (int i = 0; i < 20; i++){
             *(map+list[i]) = RGB565_GREEN;
-            usleep(0.1 * 1000000);
+            usleep(0.05 * 1000000);
         }
         usleep(0.1 * 1000000);
 
