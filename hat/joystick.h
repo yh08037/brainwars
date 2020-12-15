@@ -21,10 +21,16 @@ typedef struct {
     struct input_event ev;
 } joystick_t;
 
+typedef struct {
+    joystick_t joystick_data;
+    int vaild;
+} joystick_vaild_t;
+
 void open_joystick();
 int joystick_read_thread();
 void *joystick_command(void *arg);
 
 joystick_t joystick_data;
+joystick_vaild_t joystick_vaild_data;
 
 #endif

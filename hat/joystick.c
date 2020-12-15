@@ -26,9 +26,11 @@ int joystick_read_thread(){
 void *joystick_command(void *arg){
     while (1){
         read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
+        if (joystick_data.ev.type != 0 && joystick_data.ev.value == 1){
+            joystick_vaild_data.joystick_data = joystick_data;
+            joystick_vaild_data.vaild = 1;
+        }
 
         sleep(DELAY_SYNC / 1000.0);
-
-
     }
 }
