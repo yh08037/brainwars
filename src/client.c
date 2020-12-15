@@ -165,8 +165,10 @@ void *process(void *arg) {
 
 		case IP_READY:
 			printf("waiting for ready input...\n");
-			
+
+			display_please_ready(led_matrix.map);
 			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
+			display_ready(led_matrix.map);
 
 			tx_msg.type = MSG_READY;
 			tx_msg.data = 0;
@@ -194,13 +196,15 @@ void *process(void *arg) {
 			case 2:
 				rainfall_game(&game_result, &led_matrix);
 				break;
+			case 3:
+				color_switch_game(&game_result, &led_matrix);
+				break;
 			default:
 				printf("???\n");
 				break;
 			}
 
-
-			score = 3 * game_result.correct - 2 * game_result.wrong;
+			score = game_result.score;
 			printf("game score: %d\n", score);
 
 			tx_msg.type = MSG_FINISH;

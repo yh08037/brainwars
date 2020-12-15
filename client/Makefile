@@ -1,6 +1,6 @@
 TARGET=client
 OBJS=main.o $(TARGET).o queue.o message.o led_matrix.o joystick.o 
-OBJS+=game_basis.o slide_master.o high_or_low.o rainfall.o
+OBJS+=game_basis.o slide_master.o high_or_low.o rainfall.o color_switch.o
 
 all:
 	gcc -c ../src/$(TARGET).c -o $(TARGET).o -I../game/ -I../hat/
@@ -14,7 +14,8 @@ all:
 	gcc -c ../game/slide_master.c -o slide_master.o -I../hat/
 	gcc -c ../game/high_or_low.c -o high_or_low.o -I../hat/
 	gcc -c ../game/rainfall.c -o rainfall.o -I../hat/
-
+	gcc -c ../game/color_switch.c -o color_switch.o -I../hat/
+	
 	gcc -c main.c -o main.o -I../src/ -I../game/ -I../hat/
 	
 	gcc -o $(TARGET) $(OBJS) -lpthread
