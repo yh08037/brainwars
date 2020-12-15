@@ -23,20 +23,56 @@
 ![bidirectional_msg](images/basic-txrx-complete.png)
 
 #### LED Matrix 이해 및 응용
-LED matrix 이해 및 원하는 원하는 대로 출력
 
-원하는 위치에 원하는 색을 표시할 수 있도록 구현함
+LED Matrix 이해 및 LED matrix에 원하는 대로 출력
+- 예제를 이해하고, 메모리 주소
+- LED Matrix의 메모리 주소에 접근하여 RGB565 포맷에 따라 원하는 위치에 원하는 색을 표시할 수 있음
+![green_arrow](images/green_arrow.jpg)
+- 메모리의 주소는 아래와 같음을 확인함
+![led_matrix_info](images/led_matrix_info.jpg)
 
 ### 2020.11.23
-#### joystick 이해
+#### joystick 이해 및 설계
+
 joystick의 입력을 받을 수 있는 코드 구현
+- python 모듈을 통해 joystick가 어떻게 동작하는지 분석함
+- "/dev/input/event0"에 joystick의 입력을 받을 수 있는 파일 디스크립터가 있음을 확인. 즉 joystick은 하나의 키보드처럼 동작함
+- 파이썬 sensehat 모듈을 통해 어떤 식으로 입력을 받는지 동작 확인
+- c언어로 구현해야 하기 때문에 c언어의 read() 함수를 가져와 조이스틱의 입력 정보를 확인함
+- joystick은 스레드로 동작, 전역변수를 통해 메인 스레드와 연결
+- 키를 입력했을 때 순간 이벤트를 발생하고, 바로 다음에 빈 이벤트를 발생시킨다.
+- 또한 계속 입력했을 때, 키를 놓았을 때 이벤트를 발생하고, 바로 다음에 빈 이벤트를 발생시킨다.
+```
+pi@raspberrypi:~/brainwars/brainwars/game $ ./test
+105
+0
+105
+0
+105
+0
+105
+0
+105
+0
+105
+0
+106
+0
+106
+0
+103
+```
+- 키를 입력했을 때 아래의 정보가 출력된다.
+
+![joystick_info](images/joystick_info.jpg)
+
 
 #### slide_mater 일부 구현
 파란색 화살표면 화살표 반대로 입력, 빨간색 화살표면 반대로 입력
 
 오답시 깜빡깜빡하게 만들었음
 
-![arrow](images/slide_master_arrow.png)
+![arrow_blink](images/arrow_blink.gif)
 
 #### client/server - main 함수 인터페이스 단순화 
 소켓, 쓰레드 설정등의 코드를 init/run 함수로 분리해 main 함수를 읽기 쉽게 함
@@ -51,17 +87,26 @@ joystick의 입력을 받을 수 있는 코드 구현
 ### 2020.11.24
 
 #### slider master 코드 최적화
-코드 블럭화 시켜 코드를 옮기기 편하게 만들었음
+코드 블럭화 시켜 코드를 옮기기 편하게 만들었음 아래 사진은 게임 실행 파일의 main 함수임
+
+추가로 파일 분리도 같이 할 예정
+
 ![shortcode](images/slide_master_shortcode.png)
 
 ### 2020.11.25
 
 #### 단일 slider matster 완성
-시작하기 전 3초 타이머 구성 - 주변 테두리(링)으로 시각적으로 남은 시간 (ms) 단위만 표현
+시작하기 전 3초 타이머 구성 - 주변 테두리(링)으로 시각적으로 남은 시간 (ms) 단위 표현
+
+![ring_321](images/ring_321.gif)
 
 게임 시작하면 20초 동안 플레이 - 주변 테두리(링)으로 시각적으로 전체 남은 시간 표현
 
+![ring_ingame](images/ring_ingame.gif)
+
 게임 끝나면 점수 표시 후 사라짐
+
+![result](images/game_result.gif)
 
 #### 소스 파일들의 위치 변경
 `queue.h` `queue.c`의 중복, main 폴더 내의 파일이 너무 많아짐에 따라 
