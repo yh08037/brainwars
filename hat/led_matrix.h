@@ -50,6 +50,9 @@ void number_countdown(uint16_t *map, int number);
 void ring(uint16_t *map, double left_time, double max_time, int color_code, bool is_overwrite);
 void rotate_ccw90(uint16_t *map, int shape[], int color_code);
 
+void display_please_ready(uint16_t *map);
+void display_ready(uint16_t *map);
+
 
 // void delay(int);
 
