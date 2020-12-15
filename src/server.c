@@ -280,7 +280,7 @@ void *process(void *arg) {
 			// 	case 2: printf("draw\n"); break;
 			// 	default: printf("???\n");
 			// }
-			print_player();
+			print_result_player();
 			
 			printf("press any key to restart\n");
 			scanf("%c", &temp);
@@ -368,11 +368,13 @@ void eval_player() {
 	node *curr;
 	player_info_t *player, *first;
 
+	print_player();
+
 	max = 1000;
 	for (int i = 1; i <= NUM_PLAYER; i++) {
+		temp = -1000;
 		curr = serving_fd.front;
 		while (curr != NULL) {
-			temp = -1000;
 			player = (player_info_t*)(curr->data);
 			if (player->score < max) {
 				player->result++;
@@ -383,6 +385,8 @@ void eval_player() {
 		}
 		max = temp;
 	}
+	
+	print_player();
 
 	for (int i = 1; i <= NUM_PLAYER; i++) {
 		first = NULL;
@@ -404,6 +408,8 @@ void eval_player() {
 		if (flag)
 			first->result *= -1;
 	}
+
+	print_player();
 }
 
 void send_result_to_all_player() {
@@ -438,7 +444,7 @@ void init_player() {
 	}
 }
 
-void print_player() {
+void print_result_player() {
 
 	node *curr = serving_fd.front;
 	player_info_t *player;
@@ -454,6 +460,24 @@ void print_player() {
 			printf("    fd%d - joint %d\n", fd, result * (-1));
 		else
 			printf("    fd%d - %d\n", fd, result);
+		curr = curr->next;
+	}
+	printf("\n");
+}
+
+void print_player() {
+
+	node *curr = serving_fd.front;
+	player_info_t *player;
+	int fd, score, result;
+
+	while (curr != NULL) {
+		player = (player_info_t*)(curr->data);
+		fd = player->fd;
+		score = player->score;
+		result = player->result;
+		printf("fd%d %d %d\n", fd, score, result);
+
 		curr = curr->next;
 	}
 	printf("\n");
