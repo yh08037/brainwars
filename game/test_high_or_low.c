@@ -2,6 +2,8 @@
 
 /* execution
  * gcc -o test test_high_or_low.c high_or_low.c game_basis.c led_matrix.c joystick.c -lpthread
+ * ./test
+   (led_matrix.h(.c) joystick.h(.c) have to exist in game directory)
 */
 
 int main(void){
