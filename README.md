@@ -243,3 +243,10 @@ title, button 등 기본적인 html 문법을 통해 프로그램 동작 절차 
 http 서버는 [laobubu - Pico HTTP Server in C](https://gist.github.com/laobubu/d6d0e9beb934b60b2e552c2d03e1409e) 를 기반으로 GET에 해당하는 응답을 구현하였습니다.
 
 ![web-test](images/web-test.png)
+
+
+
+### 2020.12.16
+
+#### 네 번째 게임 color switch 구현
+![colorswitch](images/colorswitch.gif)
