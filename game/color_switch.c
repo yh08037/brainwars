@@ -56,6 +56,7 @@ void color_switch_game(result_t *result, led_matrix_t *led_matrix) // call this 
     int score = result->correct * CORRECT_POINT + result->wrong * WRONG_POINT;
     if (score < 0) score = 0;
 
+    result->score = score;
     disp_nums(led_matrix->map, score, RGB565_WHITE);
     delay(5000);
 }

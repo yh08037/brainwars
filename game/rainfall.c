@@ -77,6 +77,8 @@ void rainfall_game(result_t *result, led_matrix_t *led_matrix)
     int score = result->correct * CORRECT_POINT_RAINFALL + result->wrong * WRONG_POINT_RAINFALL;
     if (score < 0) score = 0;
 
+    result->score = score;
+
     disp_nums(led_matrix->map, score, RGB565_WHITE);
     delay(5000);
 }

@@ -30,6 +30,7 @@
 typedef struct _result_t {
     int correct;
     int wrong;
+    int score;
 } result_t;
 
 void delay(int);
