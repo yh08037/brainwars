@@ -225,9 +225,18 @@ void *process(void *arg) {
 
 		case DP_RESULT:
 			switch (result) {
-				case -1: printf("draw\n"); break;
-				case 1: printf("win\n"); break;
-				case 2: printf("lose\n"); break;
+				case -1:
+					printf("draw\n"); 
+					display_face(led_matrix.map, 2);
+					break;
+				case 1:
+					printf("win\n"); 
+					display_face(led_matrix.map, 0);
+					break;
+				case 2:
+					printf("lose\n");
+					display_face(led_matrix.map, 1);
+					break;
 				default: printf("???\n");
 			}
 			printf("press any key to restart\n");
