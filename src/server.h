@@ -77,6 +77,7 @@ int cmp_player(void *a, void *b);
 void eval_player();
 void send_result_to_all_player();
 void init_player();
+void print_result_player();
 void print_player();
 
 #endif // SERVER_H
