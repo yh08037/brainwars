@@ -52,6 +52,7 @@ void rotate_ccw90(uint16_t *map, int shape[], int color_code);
 
 void display_please_ready(uint16_t *map);
 void display_ready(uint16_t *map);
+void display_face(uint16_t *map, int status);
 
 
 // void delay(int);
