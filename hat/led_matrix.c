@@ -275,9 +275,10 @@ void rotate_ccw90(uint16_t *map, int shape[], int color_code){
 
 void display_please_ready(uint16_t *map){
     memset(map, 0, FILESIZE);
-    int list[4] = {19, 27, 35, 43};
-    for (int i = 0; i < 4; i++){
+    int list[5] = {11, 19, 27, 35, 43};
+    for (int i = 0; i < 5; i++){
         *(map+list[i]) = RGB565_RED;
+        *(map+list[i]+1) = RGB565_RED;
     }
 }
 
@@ -286,11 +287,13 @@ void display_ready(uint16_t *map){
     int list[7] = {52, 45, 38, 29, 20, 11, 2};
     for (int i = 0; i < 3; i++){
         *(map+list[i]) = RGB565_GREEN;
+        *(map+list[i]+1) = RGB565_GREEN;
         usleep(0.1 * 1000000);
     }
     usleep(0.3 * 1000000);
     for (int i = 3; i < 7; i++){
         *(map+list[i]) = RGB565_GREEN;
+        *(map+list[i]+1) = RGB565_GREEN;
         usleep(0.05 * 1000000);
     }
 }
