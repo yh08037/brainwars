@@ -345,8 +345,9 @@ void create_html(char *dst, game_t game, html_t html) {
     char *a = "<!DOCTYPE html><html><head><title>";
     char *b = "</title><meta charset=\"UTF-8\"></head><body><h1>";
     char *c = "</h1><h2>";
-    char *d = "</h2><input type=\"button\" value=\"next\" onclick=\"location.href='";
-    char *e = "'\"></body></html>";
+    char *d = "</h2>";
+    char *e = "<input type=\"button\" value=\"next\" onclick=\"location.href='";
+    char *f = "'\"></body></html>";
 
     strcpy(dst, a);
     strcat(dst, name[game]);
@@ -354,12 +355,13 @@ void create_html(char *dst, game_t game, html_t html) {
     strcat(dst, name[game]);
     strcat(dst, c);
     strcat(dst, desc[html]);
-    
+    strcat(dst, d);
+
     if (html == RESULT) {
         strcat(dst, result_buffer);
     }
 
-    strcat(dst, d);    
-    strcat(dst, page[html]);
     strcat(dst, e);
+    strcat(dst, page[html]);
+    strcat(dst, f);
 }

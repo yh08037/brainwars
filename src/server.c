@@ -449,21 +449,26 @@ void print_result_player() {
 
 	node *curr = serving_fd.front;
 	player_info_t *player;
-	int fd, result;
+	int fd, result, score, n;
 	char temp[32];
 
 	printf("Result :\n");
 	result_buffer[0] = '\0';
 
+	n = 1;
+
 	while (curr != NULL) {
 		player = (player_info_t*)(curr->data);
 		fd = player->fd;
 		result = player->result;
+		score = player->score;
 		
-		if (result < 0)
-			sprintf(temp, "    fd%d - joint %d\n", fd, result * (-1));
-		else
-			sprintf(temp, "    fd%d - %d\n", fd, result);
+		if (result == -1)
+			sprintf(temp, "User %d Draw - %d\n", fd, score);
+		else if (result == 1)
+			sprintf(temp, "User %d Win - %d\n", fd, score);
+		else if (result == 2)
+			sprintf(temp, "User %d Lose - %d\n", fd, score);
 		curr = curr->next;
 		strcat(result_buffer, temp);
 	}
