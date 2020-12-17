@@ -241,6 +241,9 @@ void *process(void *arg) {
 			}
 			printf("press any key to restart\n");
 			read(joystick_data.fd, &joystick_data.ev, sizeof(struct input_event));
+
+			memset(led_matrix.map, 0, FILESIZE);
+
 			state = WF_SELECT;
 
 		default:

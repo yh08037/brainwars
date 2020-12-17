@@ -241,92 +241,88 @@ void route()
     ROUTE_GET("/slide_master/ready.html") {
         game = 1;
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/slide_master/ready.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, SLIDE_MASTER, READY);
         printf("%s", temp);
     }
 
     ROUTE_GET("/high_or_low/ready.html") {
         game = 2;
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/high_or_low/ready.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, HIGH_OR_LOW, READY);
         printf("%s", temp);
     }
 
     ROUTE_GET("/rainfall/ready.html") {
         game = 3;
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/rainfall/ready.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, RAINFALL, READY);
         printf("%s", temp);
     }
 
     ROUTE_GET("/color_switch/ready.html") {
         game = 4;
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/color_switch/ready.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, COLOR_SWITCH, READY);
         printf("%s", temp);
     }
 
     /* ========================= INGAME ========================= */
 
     ROUTE_GET("/slide_master/ingame.html") {
-        printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/slide_master/ingame.html", O_RDONLY);
-        read(fd, temp, 8096);
-        printf("%s", temp);
+        if (both_ready){
+            printf("HTTP/1.1 200 OK\r\n\r\n");
+            create_html(temp, SLIDE_MASTER, INGAME);
+            printf("%s", temp);
+        }
     }
 
     ROUTE_GET("/high_or_low/ingame.html") {
-        printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/high_or_low/ingame.html", O_RDONLY);
-        read(fd, temp, 8096);
-        printf("%s", temp);
+        if (both_ready){
+            printf("HTTP/1.1 200 OK\r\n\r\n");
+            create_html(temp, HIGH_OR_LOW, INGAME);
+            printf("%s", temp);
+        }
     }
 
     ROUTE_GET("/rainfall/ingame.html") {
-        printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/rainfall/ingame.html", O_RDONLY);
-        read(fd, temp, 8096);
-        printf("%s", temp);
+        if (both_ready){
+            printf("HTTP/1.1 200 OK\r\n\r\n");
+            create_html(temp, RAINFALL, INGAME);
+            printf("%s", temp);
+        }
     }
 
     ROUTE_GET("/color_switch/ingame.html") {
-        printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/color_switch/ingame.html", O_RDONLY);
-        read(fd, temp, 8096);
-        printf("%s", temp);
+        if (both_ready){
+            printf("HTTP/1.1 200 OK\r\n\r\n");
+            create_html(temp, COLOR_SWITCH, INGAME);
+            printf("%s", temp);
+        }
     }
 
     /* ========================= RESULT ========================= */
 
     ROUTE_GET("/slide_master/result.html") {
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/slide_master/result.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, SLIDE_MASTER, RESULT);
         printf("%s", temp);
     }
 
     ROUTE_GET("/high_or_low/result.html") {
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/high_or_low/result.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, HIGH_OR_LOW, RESULT);
         printf("%s", temp);
     }
 
     ROUTE_GET("/rainfall/result.html") {
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/rainfall/result.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, RAINFALL, RESULT);
         printf("%s", temp);
     }
 
     ROUTE_GET("/color_switch/result.html") {
         printf("HTTP/1.1 200 OK\r\n\r\n");
-        fd = open("html/color_switch/result.html", O_RDONLY);
-        read(fd, temp, 8096);
+        create_html(temp, COLOR_SWITCH, RESULT);
         printf("%s", temp);
     }
     
@@ -338,4 +334,32 @@ void route()
     }
   
     ROUTE_END()
+}
+
+void create_html(char *dst, game_t game, html_t html) {
+
+    char* name[4] = {"Slide master", "High or low", "Rainfall" ,"Color switch"};
+    char* desc[3] = {"Please ready...", "now in game...", "Game result"};
+    char* page[3] = {"ingame.html", "result.html", "../"};
+
+    char *a = "<!DOCTYPE html><html><head><title>";
+    char *b = "</title><meta charset=\"UTF-8\"></head><body><h1>";
+    char *c = "</h1><h2>";
+    char *d = "</h2><input type=\"button\" value=\"next\" onclick=\"location.href='";
+    char *e = "'\"></body></html>";
+
+    strcpy(dst, a);
+    strcat(dst, name[game]);
+    strcat(dst, b);
+    strcat(dst, name[game]);
+    strcat(dst, c);
+    strcat(dst, desc[html]);
+    
+    if (html == RESULT) {
+        strcat(dst, result_buffer);
+    }
+
+    strcat(dst, d);    
+    strcat(dst, page[html]);
+    strcat(dst, e);
 }

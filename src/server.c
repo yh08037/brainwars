@@ -23,8 +23,9 @@ void init_server(server_cfg_t *server_cfg, int port_number) {
 	queue_init(&serving_fd);
 
 	tx_semaphore = 1;
-	state = WF_USER;
 	game = 0;
+	both_ready = 0;
+	state = WF_USER;
 }
 
 void run_server(server_cfg_t *server_cfg) {
@@ -222,6 +223,7 @@ void *process(void *arg) {
 				}
 			}
 			game = 0;
+			both_ready = 0;
 			state = IP_SELECT;
 			break;
 
@@ -230,7 +232,7 @@ void *process(void *arg) {
 
 			// wait for browser input
 			while (0 >= game) {
-				printf("s: %d\n", game);
+				// printf("s: %d\n", game);
 				sleep(1);
  			}
 
@@ -252,6 +254,8 @@ void *process(void *arg) {
 				if (i != NUM_PLAYER)
 					sleep(1);
 			}
+
+			both_ready = 1;
 
 			tx_msg.type = MSG_START;
 			tx_msg.data = 0;
@@ -446,20 +450,25 @@ void print_result_player() {
 	node *curr = serving_fd.front;
 	player_info_t *player;
 	int fd, result;
+	char temp[32];
 
 	printf("Result :\n");
+	result_buffer[0] = '\0';
+
 	while (curr != NULL) {
 		player = (player_info_t*)(curr->data);
 		fd = player->fd;
 		result = player->result;
 		
 		if (result < 0)
-			printf("    fd%d - joint %d\n", fd, result * (-1));
+			sprintf(temp, "    fd%d - joint %d\n", fd, result * (-1));
 		else
-			printf("    fd%d - %d\n", fd, result);
+			sprintf(temp, "    fd%d - %d\n", fd, result);
 		curr = curr->next;
+		strcat(result_buffer, temp);
 	}
-	printf("\n");
+	strcat(result_buffer, "\n");
+	printf("%s\n", result_buffer);
 }
 
 void print_player() {

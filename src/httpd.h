@@ -13,8 +13,24 @@ typedef enum _server_state_t {
 	DP_RESULT,
 } server_state_t;
 
+typedef enum _html_t {
+        READY = 0,
+        INGAME,
+        RESULT,
+} html_t;
+
+typedef enum _game_t {
+        SLIDE_MASTER = 0,
+        HIGH_OR_LOW,
+        RAINFALL,
+        COLOR_SWITCH,
+} game_t;
+
+
 server_state_t state;
 int game;
+int both_ready;
+char result_buffer[64];
 
 //Server control functions
 
@@ -35,6 +51,7 @@ char *request_header(const char* name);
 // user shall implement this function
 
 void route();
+void create_html(char *dst, game_t game, html_t html);
 
 // some interesting macro for `route()`
 #define ROUTE_START()       if (0) {
