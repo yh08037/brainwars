@@ -4,6 +4,18 @@
 #include <string.h>
 #include <stdio.h>
 
+// global variables from server.h
+typedef enum _server_state_t {
+	WF_USER = 0,
+	IP_SELECT,
+	WF_READY,
+	IN_GAME,
+	DP_RESULT,
+} server_state_t;
+
+server_state_t state;
+int game;
+
 //Server control functions
 
 void *serve_forever(void *port);

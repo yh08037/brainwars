@@ -11,6 +11,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/wait.h> 
 
 #define CONNMAX 1000
 
@@ -36,6 +37,10 @@ void *serve_forever(void *port)
     char c; 
     
     int slot=0;
+
+    int fd_pipe[2];
+    char buffer[32];
+    pid_t pid;    
     
     const char *PORT = (char *) port;
 
@@ -64,11 +69,30 @@ void *serve_forever(void *port)
             perror("accept() error");
         }
         else
-        {
-            if ( fork()==0 )
-            {
+        {   
+            /* return value of fork()
+                -1  : error
+                0   : child process
+                pid : parent process 
+            */
+
+            pipe(fd_pipe);
+            pid = fork();
+
+            if (pid == 0) { 
+                // child process
                 respond(slot);
+                // printf("h3 - %d %p\n", game, &game);
+                
+                sprintf(buffer, "%d", game);
+                write(fd_pipe[1], buffer, 32);
+
                 exit(0);
+            }
+            else if (pid > 0) { 
+                // process process
+                read(fd_pipe[0], buffer, 32);
+                game = atoi(buffer);
             }
         }
 
@@ -215,6 +239,7 @@ void route()
     /* ========================= READY ========================= */
 
     ROUTE_GET("/slide_master/ready.html") {
+        game = 1;
         printf("HTTP/1.1 200 OK\r\n\r\n");
         fd = open("html/slide_master/ready.html", O_RDONLY);
         read(fd, temp, 8096);
@@ -222,6 +247,7 @@ void route()
     }
 
     ROUTE_GET("/high_or_low/ready.html") {
+        game = 2;
         printf("HTTP/1.1 200 OK\r\n\r\n");
         fd = open("html/high_or_low/ready.html", O_RDONLY);
         read(fd, temp, 8096);
@@ -229,6 +255,7 @@ void route()
     }
 
     ROUTE_GET("/rainfall/ready.html") {
+        game = 3;
         printf("HTTP/1.1 200 OK\r\n\r\n");
         fd = open("html/rainfall/ready.html", O_RDONLY);
         read(fd, temp, 8096);
@@ -236,6 +263,7 @@ void route()
     }
 
     ROUTE_GET("/color_switch/ready.html") {
+        game = 4;
         printf("HTTP/1.1 200 OK\r\n\r\n");
         fd = open("html/color_switch/ready.html", O_RDONLY);
         read(fd, temp, 8096);

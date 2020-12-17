@@ -23,6 +23,8 @@ void init_server(server_cfg_t *server_cfg, int port_number) {
 	queue_init(&serving_fd);
 
 	tx_semaphore = 1;
+	state = WF_USER;
+	game = 0;
 }
 
 void run_server(server_cfg_t *server_cfg) {
@@ -202,8 +204,7 @@ void *receive(void *arg) {
 void *process(void *arg) {
 	
 	msg_t rx_msg, tx_msg;
-	server_state_t state = WF_USER;
-	int game, fd;
+	int fd;
 	char temp;
 	player_info_t *player;
 
@@ -220,14 +221,18 @@ void *process(void *arg) {
 					sleep(1);
 				}
 			}
-			// print_player();
+			game = 0;
 			state = IP_SELECT;
 			break;
 
 		case IP_SELECT:
 			printf("waiting for select input...\n");
-			scanf("%d", &game);
-			getchar();
+
+			// wait for browser input
+			while (0 >= game) {
+				printf("s: %d\n", game);
+				sleep(1);
+ 			}
 
 			tx_msg.type = MSG_SELECT;
 			tx_msg.data = game;
@@ -259,6 +264,8 @@ void *process(void *arg) {
 		case IN_GAME:
 			printf("now gaming...\n");
 
+			// move to next page : ingame !!!
+
 			// need to fix!!!!!!
 			for (int i = 0; i < NUM_PLAYER; i++) {
 				get_msg_from_buffer(RX, &fd, &rx_msg);
@@ -274,14 +281,10 @@ void *process(void *arg) {
 			break;
 
 		case DP_RESULT:
-			// switch (result1) {
-			// 	case 0: printf("u1: lose   u2: win\n"); break;
-			// 	case 1: printf("u1: win    u2: lose\n"); break;
-			// 	case 2: printf("draw\n"); break;
-			// 	default: printf("???\n");
-			// }
 			print_result_player();
 			
+			// move to next page : result !!!
+
 			printf("press any key to restart\n");
 			scanf("%c", &temp);
 
@@ -368,8 +371,6 @@ void eval_player() {
 	node *curr;
 	player_info_t *player, *first;
 
-	print_player();
-
 	max = 1000;
 	for (int i = 1; i <= NUM_PLAYER; i++) {
 		temp = -1000;
@@ -385,8 +386,6 @@ void eval_player() {
 		}
 		max = temp;
 	}
-	
-	print_player();
 
 	for (int i = 1; i <= NUM_PLAYER; i++) {
 		first = NULL;
@@ -408,8 +407,6 @@ void eval_player() {
 		if (flag)
 			first->result *= -1;
 	}
-
-	print_player();
 }
 
 void send_result_to_all_player() {

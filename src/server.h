@@ -35,13 +35,13 @@ typedef struct _rx_arg_t {
 	int server_sockfd;
 } rx_arg_t;
 
-typedef enum _server_state_t {
-	WF_USER = 0,
-	IP_SELECT,
-	WF_READY,
-	IN_GAME,
-	DP_RESULT,
-} server_state_t;
+// typedef enum _server_state_t {
+// 	WF_USER = 0,
+// 	IP_SELECT,
+// 	WF_READY,
+// 	IN_GAME,
+// 	DP_RESULT,
+// } server_state_t;
 
 typedef enum _txrx_t{
 	TX = 0,
@@ -58,6 +58,8 @@ fd_set readfds;
 queue tx_buffer, rx_buffer, serving_fd;
 int num_client;
 int tx_semaphore;
+// server_state_t state;
+// int game;
 
 void init_server(server_cfg_t *server_cfg, int port_number);
 void run_server(server_cfg_t *server_cfg);
