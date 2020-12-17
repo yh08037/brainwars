@@ -187,16 +187,16 @@ void *process(void *arg) {
 
 		case IN_GAME:
 			switch(game){
-			case 0:
+			case 1:
 		    	slide_master_game(&game_result, &led_matrix);	
 				break;
-			case 1:
+			case 2:
 				high_or_low_game(&game_result, &led_matrix);
 				break;
-			case 2:
+			case 3:
 				rainfall_game(&game_result, &led_matrix);
 				break;
-			case 3:
+			case 4:
 				color_switch_game(&game_result, &led_matrix);
 				break;
 			default:
