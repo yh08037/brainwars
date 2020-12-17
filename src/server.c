@@ -464,13 +464,15 @@ void print_result_player() {
 		score = player->score;
 		
 		if (result == -1)
-			sprintf(temp, "User %d Draw - %d\n", fd, score);
+			sprintf(temp, "User %d Draw - %d<br>", n, score);
 		else if (result == 1)
-			sprintf(temp, "User %d Win - %d\n", fd, score);
+			sprintf(temp, "User %d Win - %d<br>", n, score);
 		else if (result == 2)
-			sprintf(temp, "User %d Lose - %d\n", fd, score);
+			sprintf(temp, "User %d Lose - %d<br>", n, score);
 		curr = curr->next;
 		strcat(result_buffer, temp);
+
+		n++;
 	}
 	strcat(result_buffer, "\n");
 	printf("%s\n", result_buffer);
