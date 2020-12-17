@@ -248,6 +248,16 @@ http 서버는 [laobubu - Pico HTTP Server in C](https://gist.github.com/laobubu
 ### 2020.12.3
 #### server에 http web server 통합
 server에서 httpd의 serve_forever() 함수 쓰레드를 생성하여 게임 서버와 웹 서버를 하나의 프로그램으로 통합하였습니다.
+```c
+void run_server(server_cfg_t *server_cfg) {
+    ...
+    res1 = pthread_create(&tx_thread, NULL, transmit, NULL);
+    res2 = pthread_create(&rx_thread, NULL, receive, (void*)&rx_arg);
+    res3 = pthread_create(&process_thread, NULL, process, NULL);
+    res4 = pthread_create(&web_thread, NULL, serve_forever, (void*)"12913");
+    ...
+}
+```
 
 
 ### 2020.12.16
@@ -262,6 +272,24 @@ server에서 httpd의 serve_forever() 함수 쓰레드를 생성하여 게임 �
 
 따라서 접속하는 클라이언트의 순서대로 플레이어의 정보를 저장하고 관리하는 자료구조와 로직을 구현하였습니다.
 
+```c
+typedef struct _player_info_t {
+	int fd;
+	int score;
+	int result;
+} player_info_t;
+
+void broadcast(msg_t *tx_msg);
+void create_player(int client_sockfd);
+void delete_player(int client_sockfd);
+player_info_t *search_player(int client_sockfd);
+int cmp_player(void *a, void *b);
+void eval_player();
+void send_result_to_all_player();
+void init_player();
+void print_player();
+```
+
 ### 2020.12.17
 #### server - web/process 쓰레드간 통신
 한 프로그램으로 통합만 되어있고 실제 구동은 독립적으로 되어왔던 웹 쓰레드와 게임 로직 쓰레드를 동기화하고,
@@ -269,3 +297,5 @@ server에서 httpd의 serve_forever() 함수 쓰레드를 생성하여 게임 �
 쓰레드간 데이터 전송와 pipe를 통한 프로세스간 데이터 전송을 통해 게임 결과 등의 데이터를 
 
 실시간으로 웹 페이지에 표시할 수 있게 되었습니다.
+
+![result](images/final_result.png)
