@@ -78,7 +78,7 @@ Sense HAT
 
 
 ## System Overview
-![overview](images/overview.png)
+![overview](images/system_overview.png)
 
 
 ## Progress
