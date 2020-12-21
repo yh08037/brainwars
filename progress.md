@@ -95,7 +95,7 @@ pi@raspberrypi:~/brainwars/brainwars/game $ ./test
 
 게임 시작하면 20초 동안 플레이 - 주변 테두리(링)으로 시각적으로 전체 남은 시간 표현
 
-![ring_ingame](images/ring_ingame.gif)
+![ring_ingame](images/new_ring_ingame.gif)
 
 게임 끝나면 점수 표시 후 사라짐
 
