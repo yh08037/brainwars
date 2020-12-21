@@ -20,8 +20,11 @@
 LED Matrix 이해 및 LED matrix에 원하는 대로 출력
 - 예제를 이해하고, 메모리 주소
 - LED Matrix의 메모리 주소에 접근하여 RGB565 포맷에 따라 원하는 위치에 원하는 색을 표시할 수 있음
+
 ![green_arrow](images/green_arrow.jpg)
+
 - 메모리의 주소는 아래와 같음을 확인함
+
 ![led_matrix_info](images/led_matrix_info.jpg)
 
 ### 2020.11.23
