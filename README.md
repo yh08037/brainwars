@@ -62,8 +62,13 @@ Sense HAT
 
 
 ## Progress
+### 개발 계획 일정
+![plan](images/plan.png)
 
-개발 일지 : [Progress.md](progress.md)
+### 개발 일지
+[Progress.md](progress.md) 에서 개발 일지 전문을 확인할 수 있다.
+
+![progress](images/progress.png)
 
 ## Developer
 
