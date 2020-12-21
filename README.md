@@ -77,6 +77,9 @@ Sense HAT
 -   서버 터미널창에 enter를 누르고 웹 브라우저에서 next를 누른다. 그리고 클라이언트에 각각 조이스틱을 한번씩 눌러주면 다시 게임을 실행할 수 있는 상태가 된다.
 
 
+## System Overview
+![overview](images/overview.png)
+
 
 ## Progress
 ### 개발 계획 일정
