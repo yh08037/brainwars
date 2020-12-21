@@ -8,7 +8,7 @@ static void usage(void) {
 		"\n"
 		"options:\n"
 		"    -h  show this message\n"
-		"    -d  ipv4 address of server (default: 155.230.107.136)\n"
+		"    -d  ipv4 address of server (default: 127.0.0.1)\n"
 		"    -p  port number of server (default: 9734)\n"
 		"\n"
 	);
@@ -18,7 +18,7 @@ static void usage(void) {
 int main(int argc, char* argv[])
 {
 	int		opt;
-	char*	ipv4_address = "155.230.107.136";
+	char*	ipv4_address = "127.0.0.1";
 	int		port_number = 9734;
 
     while ((opt = getopt(argc, argv, "hd:p:")) != -1) {
