@@ -16,6 +16,8 @@
 
 [시연영상2](https://youtu.be/2d-FR6rkFUw)
 
+[정식 플레이 영상](https://youtu.be/r5DVM6OcUGw)
+
 ## Prerequisite
 ```
 gcc version 9.3.0
