@@ -90,7 +90,7 @@ void *serve_forever(void *port)
                 exit(0);
             }
             else if (pid > 0) { 
-                // process process
+                // parent process
                 read(fd_pipe[0], buffer, 32);
                 game = atoi(buffer);
             }
