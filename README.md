@@ -16,7 +16,11 @@
 
 [시연영상2](https://youtu.be/2d-FR6rkFUw)
 
-[정식 플레이 영상](https://youtu.be/r5DVM6OcUGw)
+## Official game play
+
+아래 이미지를 클릭하여 게임 플레이 영상을 확인할 수 있습니다.
+
+[![Watch the video](https://img.youtube.com/vi/r5DVM6OcUGw/maxresdefault.jpg)](https://youtu.be/r5DVM6OcUGw)
 
 ## Prerequisite
 ```
