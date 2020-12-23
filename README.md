@@ -92,5 +92,5 @@ Sense HAT
 
 ## Developer's comment
 
--   [김도훈](reports/yh08037.md)
--   [윤대헌](reports/greathoney.md)
+-   [김도훈](reports/comment_yh08037.md)
+-   [윤대헌](reports/comment_greathoney.md)
