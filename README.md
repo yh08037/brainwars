@@ -92,5 +92,9 @@ Sense HAT
 
 ## Developer's comment
 
+**[NOTICE] 임베디드 시스템 프로그래밍 텀 프로젝트 평가 관련** 
+
+README.md 앞 내용이 결과 보고서의 공통 내용이라면, 아래 comment는 개인별 경험을 바탕으로 추가로 작성된 결과 보고서입니다. 꼭 읽어주세요.
+
 -   [김도훈의 comment](reports/comment_yh08037.md)
 -   [윤대헌의 comment](reports/comment_greathoney.md)
