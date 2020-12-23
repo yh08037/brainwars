@@ -86,11 +86,11 @@ Sense HAT
 ![plan](images/plan.png)
 
 ### 개발 일지
-[Progress.md](progress.md) 에서 개발 일지 전문을 확인할 수 있다.
+[Progress.md](reports/progress.md) 에서 개발 일지 전문을 확인할 수 있다.
 
 ![progress](images/progress.png)
 
-## Developer
+## Developer's comment
 
--   [김도훈](https://github.com/yh08037)
--   [윤대헌](https://github.com/Greathoney)
+-   [김도훈](reports/yh08037.md)
+-   [윤대헌](reports/greathoney.md)
