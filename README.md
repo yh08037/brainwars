@@ -23,7 +23,7 @@ GNU Make 4.2.1
 Raspberry Pi 4
 Sense HAT
 ```
--   Server: ubnutu linux
+-   Server: ubnutu linux + (apache2 설치되어야 함)
 -   Client: raspberry pi + sense hat 2대
 
 모두 인터넷 연결이 되어야 함
