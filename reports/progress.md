@@ -5,7 +5,7 @@
 #### client/server - 다중 사용자 접속 가능한 서버 테스트
 소켓 통신을 통한 단방향(클라이언트->서버) 문자열 메시지 송수신 구현
 
-![simple_server](images/simple-multi-user-server.png)
+![simple_server](../images/simple-multi-user-server.png)
 
 ### 2020.11.22
 #### client/server - 양방향 송수신 구현
@@ -13,7 +13,7 @@
 
 참고: [FD_SET, FD_ZERO등의 매크로 함수 정리](http://blog.naver.com/tipsware/220810795410)
 
-![bidirectional_msg](images/basic-txrx-complete.png)
+![bidirectional_msg](../images/basic-txrx-complete.png)
 
 #### LED Matrix 이해 및 응용
 
@@ -21,11 +21,11 @@ LED Matrix 이해 및 LED matrix에 원하는 대로 출력
 - 예제를 이해하고, 메모리 주소
 - LED Matrix의 메모리 주소에 접근하여 RGB565 포맷에 따라 원하는 위치에 원하는 색을 표시할 수 있음
 
-![green_arrow](images/green_arrow.jpg)
+![green_arrow](../images/green_arrow.jpg)
 
 - 메모리의 주소는 아래와 같음을 확인함
 
-![led_matrix_info](images/led_matrix_info.jpg)
+![led_matrix_info](../images/led_matrix_info.jpg)
 
 ### 2020.11.23
 #### joystick 이해 및 설계
@@ -60,7 +60,7 @@ pi@raspberrypi:~/brainwars/brainwars/game $ ./test
 ```
 - 키를 입력했을 때 아래의 정보가 출력된다.
 
-![joystick_info](images/joystick_info.jpg)
+![joystick_info](../images/joystick_info.jpg)
 
 
 #### slide_mater 일부 구현
@@ -68,17 +68,17 @@ pi@raspberrypi:~/brainwars/brainwars/game $ ./test
 
 오답시 깜빡깜빡하게 만들었음
 
-![arrow_blink](images/arrow_blink.gif)
+![arrow_blink](../images/arrow_blink.gif)
 
 #### client/server - main 함수 인터페이스 단순화 
 소켓, 쓰레드 설정등의 코드를 init/run 함수로 분리해 main 함수를 읽기 쉽게 함
 
-![clean_main](images/clean_main.png)
+![clean_main](../images/clean_main.png)
 
 #### client/server - tx_buffer / process 함수 추가
 기존 scanf로 데이터 발생시킨 부분 대신 버퍼에 보낼 데이터가 있는지 확인하여 전송
 
-![tx_buffer](images/tx_buffer_check.png)
+![tx_buffer](../images/tx_buffer_check.png)
 
 ### 2020.11.24
 
@@ -87,22 +87,22 @@ pi@raspberrypi:~/brainwars/brainwars/game $ ./test
 
 추가로 파일 분리도 같이 할 예정
 
-![shortcode](images/slide_master_shortcode.png)
+![shortcode](../images/slide_master_shortcode.png)
 
 ### 2020.11.25
 
 #### 단일 slider matster 완성
 시작하기 전 3초 타이머 구성 - 주변 테두리(링)으로 시각적으로 남은 시간 (ms) 단위 표현
 
-![ring_321](images/ring_321.gif)
+![ring_321](../images/ring_321.gif)
 
 게임 시작하면 20초 동안 플레이 - 주변 테두리(링)으로 시각적으로 전체 남은 시간 표현
 
-![ring_ingame](images/ring_ingame.gif)
+![ring_ingame](../images/ring_ingame.gif)
 
 게임 끝나면 점수 표시 후 사라짐
 
-![result](images/game_result.gif)
+![result](../images/game_result.gif)
 
 #### 소스 파일들의 위치 변경
 `queue.h` `queue.c`의 중복, main 폴더 내의 파일이 너무 많아짐에 따라 
@@ -191,11 +191,11 @@ typedef enum _server_state_t {
 
 #### 두 번째 게임 high or low 구현
 
-![high_or_low](images/high_or_low.gif)
+![high_or_low](../images/high_or_low.gif)
 
 #### 세 번째 게임 rainfall 구현
 
-![rainfall](images/rainfall.gif)
+![rainfall](../images/rainfall.gif)
 
 #### client - 모든 동작을 조이스틱으로 제어
 client 프로그램에서 더 이상 표준 입력을 제어 입력으로 사용하지 않습니다.
@@ -238,7 +238,7 @@ title, button 등 기본적인 html 문법을 통해 프로그램 동작 절차 
 
 http 서버는 [laobubu - Pico HTTP Server in C](https://gist.github.com/laobubu/d6d0e9beb934b60b2e552c2d03e1409e) 를 기반으로 GET에 해당하는 응답을 구현하였습니다.
 
-![web-test](images/web-test.png)
+![web-test](../images/web-test.png)
 
 
 ### 2020.12.3
@@ -259,7 +259,7 @@ void run_server(server_cfg_t *server_cfg) {
 ### 2020.12.16
 
 #### 네 번째 게임 color switch 구현
-![colorswitch](images/colorswitch.gif)
+![colorswitch](../images/colorswitch.gif)
 
 #### server - client 소켓 관리 로직 일반화
 이전에는 file descriptor 번호를 5, 6으로 하드코딩하여 로직을 테스트하여왔으나
@@ -294,4 +294,4 @@ void print_player();
 
 실시간으로 웹 페이지에 표시할 수 있게 되었습니다.
 
-![result](images/final_result.png)
+![result](../images/final_result.png)
