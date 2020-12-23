@@ -12,13 +12,13 @@
 
 (계획서와 실제 구현 요소와 다를 수 있음)
 
-[시연영상1](https://youtu.be/J6u8vPuKAPY)
+[시연영상1 - 김도훈](https://youtu.be/J6u8vPuKAPY)
 
-[시연영상2](https://youtu.be/2d-FR6rkFUw)
+[시연영상2 - 윤대헌](https://youtu.be/2d-FR6rkFUw)
 
 ## Official game play
 
-아래 이미지를 클릭하여 게임 플레이 영상을 확인할 수 있습니다.
+아래 이미지를 클릭하여 게임 플레이 영상을 확인할 수 있다.
 
 [![Watch the video](https://img.youtube.com/vi/r5DVM6OcUGw/maxresdefault.jpg)](https://youtu.be/r5DVM6OcUGw)
 
